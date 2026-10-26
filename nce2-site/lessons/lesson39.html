@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 39 — Am I All Right</title>
+</head>
+<body>
+<style>
+  .nce-wrap { font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif; background: #faf8f5; color: #333; line-height: 1.8; padding: 32px 16px; max-width: 720px; margin: 0 auto; position: relative; }
+  .nce-wrap h1 { font-size: 22px; font-weight: 700; color: #2c2c2c; margin-bottom: 4px; }
+  .nce-wrap .sub { font-size: 13px; color: #999; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid #e8e2da; }
+  .nce-wrap .stitle { font-size: 15px; font-weight: 600; color: #6b5c4d; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .nce-wrap .passage, .nce-wrap .dc { background: #fff; border-radius: 10px; padding: 22px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 24px; font-size: 17px; line-height: 2.1; }
+  .nce-wrap .w { cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background 0.15s, color 0.15s; position: relative; }
+  .nce-wrap .w:hover { background: #f0e8dc; }
+  .nce-wrap .w.hl { color: #8B5E3C; font-weight: 700; }
+  .nce-wrap .w.hl:hover { background: #f0e4d4; }
+  .nce-wrap .w.speaking { background: #e8dfd2; }
+  .nce-wrap .tip { position: fixed; background: #fff; border: 1px solid #e0d6c8; border-radius: 8px; padding: 12px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; font-size: 14px; line-height: 1.6; pointer-events: none; opacity: 0; transition: opacity 0.2s; max-width: 300px; }
+  .nce-wrap .tip.show { opacity: 1; pointer-events: auto; }
+  .nce-wrap .tip .tw { font-weight: 700; color: #8B5E3C; font-size: 15px; }
+  .nce-wrap .tip .tp { color: #999; font-size: 12px; margin-left: 6px; }
+  .nce-wrap .tip .tm { color: #555; margin-top: 4px; }
+  .nce-wrap .tip .tg { color: #6b5c4d; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0d6c8; font-size: 13px; line-height: 1.5; }
+  .nce-wrap .tip .spk-row { margin-top: 8px; display: flex; gap: 8px; }
+  .nce-wrap .tip .spk { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #b8a48e; font-size: 12px; pointer-events: auto; padding: 4px 10px; border-radius: 12px; border: 1px solid #e0d6c8; transition: all 0.15s; background: #faf8f5; }
+  .nce-wrap .tip .spk:hover { color: #8B5E3C; border-color: #8B5E3C; background: #fff; }
+  .nce-wrap .tip .spk.playing { color: #8B5E3C; border-color: #8B5E3C; background: #f5ede2; }
+  .nce-wrap details { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 16px; overflow: hidden; }
+  .nce-wrap summary { padding: 14px 22px; font-size: 14px; font-weight: 600; color: #6b5c4d; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px; transition: background 0.2s; list-style: none; }
+  .nce-wrap summary::-webkit-details-marker { display: none; }
+  .nce-wrap summary:hover { background: #faf5ef; }
+  .nce-wrap summary::before { content: "▶"; font-size: 10px; transition: transform 0.25s ease; display: inline-block; color: #b8a48e; }
+  .nce-wrap details[open] > summary::before { transform: rotate(90deg); }
+  .nce-wrap .dc { padding: 16px 22px 20px 22px; font-size: 15px; line-height: 1.9; color: #444; border-top: 1px solid #f0ebe4; margin-bottom: 0; }
+  .nce-wrap .dc p { margin-top: 14px; }
+  .nce-wrap .qa { margin-top: 16px; }
+  .nce-wrap .qa .q { font-weight: 600; color: #5a4a3a; margin-bottom: 4px; }
+  .nce-wrap .qa .a { color: #555; padding-left: 14px; border-left: 3px solid #e8ddd0; }
+  .nce-wrap .hint { font-size: 12px; color: #b8a48e; margin-bottom: 16px; text-align: right; }
+  .nce-wrap .voice-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nce-wrap .voice-bar label { font-size: 13px; color: #6b5c4d; font-weight: 600; }
+  .nce-wrap .voice-bar select { flex: 1; padding: 6px 10px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 13px; color: #555; background: #faf8f5; cursor: pointer; outline: none; }
+  .nce-wrap .voice-bar select:focus { border-color: #8B5E3C; }
+  .nce-wrap .voice-bar .test-btn { padding: 6px 12px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 12px; color: #6b5c4d; background: #faf8f5; cursor: pointer; transition: all 0.15s; }
+  .nce-wrap .voice-bar .test-btn:hover { border-color: #8B5E3C; color: #8B5E3C; }
+  .nav-bar { display: grid; grid-template-columns: 1fr auto 1fr auto; align-items: center; gap: 8px; margin-bottom: 20px; padding: 12px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nav-bar a { color: #8B5E3C; text-decoration: none; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  .nav-bar a:hover { background: #f0e8dc; }
+</style>
+
+<div class="nce-wrap" id="nceRoot">
+  <div class="nav-bar">
+    <a href="lesson38.html">← 上一课</a>
+    <span style="color:#999;font-size:13px">Lesson 39</span>
+    <a href="lesson40.html">下一课 →</a>
+    <a href="../index.html">返回目录</a>
+  </div>
+
+  <h1>Lesson 39 — Am I All Right</h1>
+  <p class="sub">新概念英语 第二册</p>
+
+  <div class="voice-bar">
+    <label>发音：</label>
+    <select id="voiceSelect"></select>
+    <button class="test-btn" id="testVoice">试听</button>
+  </div>
+
+  <p class="stitle">课文原文</p>
+  <p class="hint">点击任意单词查看释义、语法和发音</p>
+  <div class="passage" data-sentences="While John Gilbert was in hospital, he asked his doctor to tell him whether his operation had been successful, but the doctor refused to do so.|The following day, the patient asked for a bedside telephone.|When he was alone, he telephoned the hospital exchange and asked for Doctor Millington.|When the doctor answered the phone, Mr.|Gilbert said he was inquiring about a certain patient, a Mr.|John Gilbert.|He asked if Mr.|Gilbert's operation had been successful and the doctor told him that it had been.|He then asked when Mr.Gilbert would be allowed to go home and the doctor told him that he would have to stay in hosptial for another two weeks.|Then Dr.|Millington asked the caller if he was a relative of the patient.‘No,’the patient answered, ‘I am Mr.|John Gilbert.’"></div>
+
+  <details open>
+    <summary>简单句口语复述</summary>
+    <div class="dc" data-sentences="While in hospital, John Gilbert wanted to know if his operation had succeeded, but his doctor would not tell him.|So he telephoned the hospital exchange himself, pretending to ask about a patient named Mr John Gilbert.|He learnt the operation was successful but he must stay two more weeks, until the doctor asked who he was, and he replied that he was Mr John Gilbert himself!"></div>
+  </details>
+
+  <details open>
+    <summary>扩展口语问答参考</summary>
+    <div class="dc">
+      <div class="qa">
+        <p class="q" data-sentences="Have you ever been to the doctor?"></p>
+        <p class="a" data-sentences="Yes, I visit the doctor regularly.|Check-ups help catch problems early.|I don't like going when I'm sick.|But it's important for good health."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="What do you do when you feel unwell?"></p>
+        <p class="a" data-sentences="I rest and drink plenty of water.|If it's serious, I see a doctor.|I take medicine as prescribed.|Good health is the most important thing."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="Do you worry about your health?"></p>
+        <p class="a" data-sentences="I try to maintain a healthy lifestyle.|Worrying too much isn't good for you.|Regular exercise and good diet help.|Prevention is better than cure."></p>
+      </div>
+    </div>
+  </details>
+
+  <div class="tip" id="tooltip"></div>
+</div>
+
+<script>
+const dict = {
+  "a": {"pos":"art.","meaning":"一个","grammar":"不定冠词"},
+  "about": {"pos":"prep.","meaning":"关于","grammar":"介词"},
+  "allowed": {"pos": "v.", "meaning": "允许了", "grammar": "allow的过去式"},
+  "alone": {"pos": "adv.", "meaning": "独自", "grammar": "副词"},
+  "am": {"pos":"v.","meaning":"是","grammar":"be动词，第一人称"},
+  "and": {"pos":"conj.","meaning":"和","grammar":"并列连词"},
+  "another": {"pos":"adj.","meaning":"另一个","grammar":"形容词"},
+  "answered": {"pos": "v.", "meaning": "回答了", "grammar": "answer的过去式"},
+  "as": {"pos":"prep.","meaning":"作为","grammar":"介词"},
+  "asked": {"pos":"v.","meaning":"问了","grammar":"ask的过去式"},
+  "be": {"pos":"v.","meaning":"是","grammar":"be动词原形"},
+  "bedside": {"pos": "n.", "meaning": "床边（by the bedside 在床旁）", "grammar": "名词，可在句中作主语或宾语。"},
+  "been": {"pos":"v.","meaning":"去过/been","grammar":"be的过去分词"},
+  "better": {"pos": "n.", "meaning": "bett的的人/物", "grammar": "名词后缀，表执行者"},
+  "but": {"pos":"conj.","meaning":"但是","grammar":"转折连词"},
+  "caller": {"pos": "n.", "meaning": "call的的人/物", "grammar": "名词后缀，表执行者"},
+  "catch": {"pos":"v.","meaning":"抓住","grammar":"动词原形"},
+  "certain": {"pos":"adj.","meaning":"确定的","grammar":"形容词"},
+  "check": {"pos": "n.", "meaning": "检查", "grammar": "名词，可在句中作主语或宾语。"},
+  "cure": {"pos": "n.", "meaning": "治愈", "grammar": "名词，可在句中作主语或宾语。"},
+  "day": {"pos":"n.","meaning":"天","grammar":"名词"},
+  "diet": {"pos": "n.", "meaning": "饮食", "grammar": "名词，可在句中作主语或宾语。"},
+  "do": {"pos":"v.","meaning":"做","grammar":"助动词/实义动词"},
+  "doctor": {"pos": "n.", "meaning": "doct的的人", "grammar": "名词后缀，表执行者"},
+  "don't": {"pos":"aux.","meaning":"不要","grammar":"do not缩写"},
+  "dr": {"pos": "n.", "meaning": "博士；医生（Dr.）", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "drink": {"pos":"v.","meaning":"喝","grammar":"动词原形"},
+  "early": {"pos":"adj.","meaning":"早的","grammar":"形容词"},
+  "ever": {"pos": "adv.", "meaning": "曾经", "grammar": "时间副词"},
+  "exchange": {"pos": "n.", "meaning": "交换", "grammar": "名词，可在句中作主语或宾语。"},
+  "exercise": {"pos": "n./v.", "meaning": "锻炼；练习", "grammar": "名词，可在句中作主语或宾语。"},
+  "feel": {"pos":"v.","meaning":"感觉","grammar":"动词原形"},
+  "following": {"pos": "v.", "meaning": "跟随", "grammar": "follow的现在分词"},
+  "for": {"pos":"prep.","meaning":"为了","grammar":"介词"},
+  "gilbert": {"pos": "n.", "meaning": "吉尔伯特（人名）", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "gilbert's": {"pos": "n.", "meaning": "吉尔伯特（人名）的（所有格）", "grammar": "名词 + 's 构成所有格，表示“……的”。"},
+  "go": {"pos":"v.","meaning":"去","grammar":"动词原形"},
+  "going": {"pos":"v.","meaning":"去","grammar":"go的现在分词"},
+  "good": {"pos":"adj.","meaning":"好的","grammar":"形容词"},
+  "had": {"pos":"v.","meaning":"有（过去式）","grammar":"have的过去式"},
+  "have": {"pos":"v.","meaning":"有","grammar":"动词，have/has有"},
+  "he": {"pos":"pron.","meaning":"他","grammar":"代词主格，作主语"},
+  "health": {"pos": "n.", "meaning": "健康", "grammar": "名词，可在句中作主语或宾语。"},
+  "healthy": {"pos": "adj.", "meaning": "健康的", "grammar": "形容词，修饰名词或作表语。"},
+  "help": {"pos":"v.","meaning":"帮助","grammar":"动词原形"},
+  "him": {"pos":"pron.","meaning":"他","grammar":"代词宾格"},
+  "his": {"pos":"pron.","meaning":"他的","grammar":"形容词性物主代词"},
+  "home": {"pos":"n.","meaning":"家","grammar":"名词"},
+  "hospital": {"pos":"n.","meaning":"医院","grammar":"名词"},
+  "hosptial": {"pos": "adj.", "meaning": "hospti的与有关的", "grammar": "形容词后缀"},
+  "i": {"pos":"pron.","meaning":"我","grammar":"代词主格，作主语"},
+  "i'm": {"pos":"pron.","meaning":"我是","grammar":"I am缩写"},
+  "if": {"pos":"conj.","meaning":"如果","grammar":"条件连词"},
+  "important": {"pos":"adj.","meaning":"重要的","grammar":"形容词"},
+  "in": {"pos":"prep.","meaning":"在…里","grammar":"介词"},
+  "inquiring": {"pos": "n.", "meaning": "inquir的的行为", "grammar": "名词/动名词"},
+  "is": {"pos":"v.","meaning":"是","grammar":"be动词，第三人称单数"},
+  "isn't": {"pos":"v.","meaning":"不是","grammar":"is not缩写"},
+  "it": {"pos":"pron.","meaning":"它","grammar":"代词"},
+  "it's": {"pos":"v.","meaning":"它是","grammar":" "},
+  "john": {"pos": "n.", "meaning": "约翰（人名）", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "lifestyle": {"pos": "n.", "meaning": "生活方式", "grammar": "名词，可在句中作主语或宾语。"},
+  "like": {"pos":"prep.","meaning":"像","grammar":"介词"},
+  "maintain": {"pos": "v.", "meaning": "维持", "grammar": "动词原形"},
+  "medicine": {"pos": "n.", "meaning": "药", "grammar": "名词，可在句中作主语或宾语。"},
+  "millington": {"pos": "n.", "meaning": "米林顿（人名）", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "most": {"pos": "adj.", "meaning": "许多", "grammar": "最高级形式。 形容词，修饰不可数名词"},
+  "mr": {"pos":"n.","meaning":"先生","grammar":"缩写"},
+  "much": {"pos":"adj.","meaning":"许多","grammar":"形容词"},
+  "no": {"pos":"adv.","meaning":"不","grammar":"否定回答"},
+  "of": {"pos":"prep.","meaning":"…的","grammar":"介词"},
+  "operation": {"pos": "n.", "meaning": "opera的的行为/状态", "grammar": "名词后缀"},
+  "patient": {"pos": "n.", "meaning": "病人", "grammar": "名词，可在句中作主语或宾语。"},
+  "phone": {"pos":"n.","meaning":"电话","grammar":"名词"},
+  "plenty": {"pos": "n.", "meaning": "充足", "grammar": "名词，可在句中作主语或宾语。"},
+  "prescribed": {"pos": "adj.", "meaning": "prescrib的被的", "grammar": "形容词/过去分词"},
+  "prevention": {"pos": "n.", "meaning": "preven的的行为/状态", "grammar": "名词后缀"},
+  "problems": {"pos": "n.", "meaning": "问题", "grammar": "名词复数形式。"},
+  "refused": {"pos": "v.", "meaning": "拒绝了", "grammar": "refuse的过去式"},
+  "regular": {"pos": "adj.", "meaning": "定期的", "grammar": "形容词，修饰名词或作表语。"},
+  "regularly": {"pos": "adv.", "meaning": "定期地", "grammar": "频率副词"},
+  "relative": {"pos": "adj.", "meaning": "relat的有倾向的", "grammar": "形容词后缀"},
+  "rest": {"pos": "n.", "meaning": "休息", "grammar": "名词，可在句中作主语或宾语。"},
+  "said": {"pos":"v.","meaning":"说了","grammar":"say的过去式"},
+  "see": {"pos":"v.","meaning":"看见","grammar":"动词原形"},
+  "serious": {"pos": "adj.", "meaning": "seri的有性质的", "grammar": "形容词后缀"},
+  "sick": {"pos": "adj.", "meaning": "生病的", "grammar": "形容词，修饰名词或作表语。"},
+  "so": {"pos":"conj.","meaning":"所以","grammar":"因果连词"},
+  "stay": {"pos": "n.", "meaning": "停留", "grammar": "名词，可在句中作主语或宾语。"},
+  "successful": {"pos": "adj.", "meaning": "success的充满的", "grammar": "形容词后缀"},
+  "take": {"pos":"v.","meaning":"拿","grammar":"动词原形"},
+  "telephone": {"pos":"n.","meaning":"电话","grammar":"名词"},
+  "telephoned": {"pos": "adj.", "meaning": "telephon的被的", "grammar": "形容词/过去分词"},
+  "tell": {"pos":"v.","meaning":"告诉","grammar":"动词原形"},
+  "than": {"pos": "n.", "meaning": "比", "grammar": "名词，可在句中作主语或宾语。"},
+  "that": {"pos":"pron.","meaning":"那","grammar":"指示代词/连词"},
+  "the": {"pos":"art.","meaning":"这，那","grammar":"定冠词，特指"},
+  "then": {"pos":"adv.","meaning":"然后/那时","grammar":"时间副词"},
+  "thing": {"pos": "n.", "meaning": "东西", "grammar": "名词，可在句中作主语或宾语。"},
+  "to": {"pos":"prep.","meaning":"到","grammar":"介词"},
+  "told": {"pos":"v.","meaning":"告诉了","grammar":"tell的过去式"},
+  "too": {"pos":"adv.","meaning":"太/也","grammar":"程度副词"},
+  "try": {"pos":"v.","meaning":"尝试","grammar":"动词原形"},
+  "two": {"pos": "num.", "meaning": "二", "grammar": "数词，表示数量或顺序。"},
+  "unwell": {"pos": "adj.", "meaning": "不舒服的", "grammar": "形容词，修饰名词或作表语。"},
+  "ups": {"pos": "adv.", "meaning": "向上", "grammar": "名词复数形式。 副词"},
+  "visit": {"pos":"v.","meaning":"参观","grammar":"动词原形"},
+  "was": {"pos":"v.","meaning":"是（过去式）","grammar":"be动词过去式"},
+  "water": {"pos":"n.","meaning":"水","grammar":"名词"},
+  "weeks": {"pos": "n.", "meaning": "week（复数）", "grammar": "名词复数"},
+  "what": {"pos":"pron.","meaning":"什么","grammar":"疑问代词"},
+  "when": {"pos":"conj.","meaning":"当…时","grammar":"时间连词"},
+  "whether": {"pos":"conj.","meaning":"是否","grammar":"连词"},
+  "while": {"pos":"conj.","meaning":"当…时/而","grammar":"时间/转折连词"},
+  "worry": {"pos": "n.", "meaning": "担心", "grammar": "名词，可在句中作主语或宾语。"},
+  "worrying": {"pos": "n.", "meaning": "worry的的行为", "grammar": "名词/动名词"},
+  "would": {"pos":"aux.","meaning":"将会","grammar":"will的过去式/虚拟语气"},
+  "yes": {"pos":"int.","meaning":"是的","grammar":"肯定回答"},
+  "you": {"pos":"pron.","meaning":"你，你们","grammar":"代词"},
+  "your": {"pos":"pron.","meaning":"你的","grammar":"形容词性物主代词"},
+};
+
+const hlWords = new Set(["john", "gilbert", "hospital", "doctor", "whether", "operation", "successful", "refused", "following", "patient", "bedside", "telephone", "alone", "telephoned", "exchange", "millington", "phone", "inquiring", "certain", "allowed", "stay", "hosptial", "weeks", "caller"]);
+
+const tooltip = document.getElementById("tooltip");
+const nceRoot = document.getElementById("nceRoot");
+const voiceSelect = document.getElementById("voiceSelect");
+const testBtn = document.getElementById("testVoice");
+
+let voices = [];
+let selectedVoice = null;
+
+function loadVoices() {
+  voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return;
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+  voiceSelect.innerHTML = '';
+  const groups = { 'US': [], 'UK': [], 'Other': [] };
+  enVoices.forEach(v => {
+    const name = v.name.toLowerCase();
+    if (name.includes('us') || name.includes('american') || v.lang === 'en-US') groups['US'].push(v);
+    else if (name.includes('uk') || name.includes('british') || v.lang === 'en-GB') groups['UK'].push(v);
+    else groups['Other'].push(v);
+  });
+  const preferUS = ['Samantha', 'Alex', 'Tom'];
+  const preferUK = ['Daniel', 'Kate', 'Serena'];
+  function sortVoices(list, pref) {
+    return list.sort((a, b) => {
+      const ai = pref.findIndex(p => a.name.includes(p));
+      const bi = pref.findIndex(p => b.name.includes(p));
+      if (ai !== -1 && bi === -1) return -1;
+      if (ai === -1 && bi !== -1) return 1;
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      return a.name.localeCompare(b.name);
+    });
+  }
+  groups['US'] = sortVoices(groups['US'], preferUS);
+  groups['UK'] = sortVoices(groups['UK'], preferUK);
+  if (groups['US'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇺🇸 美式发音';
+    groups['US'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      if (i === 0 && !selectedVoice) { selectedVoice = v; opt.selected = true; }
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['UK'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇬🇧 英式发音';
+    groups['UK'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['Other'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '其他';
+    groups['Other'].forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+}
+
+loadVoices();
+if (typeof speechSynthesis !== 'undefined') speechSynthesis.onvoiceschanged = loadVoices;
+
+voiceSelect.addEventListener('change', () => { selectedVoice = voices[parseInt(voiceSelect.value)]; });
+testBtn.addEventListener('click', () => {
+  if (!selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance('Hello, this is a test.');
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  window.speechSynthesis.speak(u);
+});
+
+function wrapSentences(el) {
+  const data = el.getAttribute("data-sentences");
+  if (!data) return;
+  const sentences = data.split("|");
+  let html = "";
+  sentences.forEach((s, si) => {
+    const tokens = s.match(/[\w']+|[^\w']+/g) || [];
+    for (const tok of tokens) {
+      if (/^[\w']+$/.test(tok)) {
+        const lower = tok.toLowerCase();
+        const isHl = hlWords.has(lower);
+        html += `<span class="w${isHl ? ' hl' : ''}" data-word="${lower}" data-sentence="${encodeURIComponent(s)}">${tok}</span>`;
+      } else html += tok;
+    }
+    if (si < sentences.length - 1) html += " ";
+  });
+  el.innerHTML = html;
+}
+
+document.querySelectorAll("[data-sentences]").forEach(wrapSentences);
+
+function speak(word, el) {
+  if (!('speechSynthesis' in window) || !selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  el.classList.add("speaking");
+  u.onend = () => el.classList.remove("speaking");
+  u.onerror = () => el.classList.remove("speaking");
+  window.speechSynthesis.speak(u);
+}
+
+function showTip(el, word) {
+  const info = dict[word];
+  const rect = el.getBoundingClientRect();
+  let grammarText = info && info.grammar ? info.grammar : "暂无语法解释";
+  if (info) {
+    tooltip.innerHTML = `<span class="tw">${word}</span><span class="tp">${info.pos}</span><div class="tm">${info.meaning}</div><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  } else {
+    tooltip.innerHTML = `<span class="tw">${word}</span><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  }
+  let left = rect.left + rect.width / 2;
+  let top = rect.bottom + 6;
+  tooltip.style.left = left + "px";
+  tooltip.style.top = top + "px";
+  tooltip.style.transform = "translateX(-50%)";
+  tooltip.classList.add("show");
+  requestAnimationFrame(() => {
+    const tr = tooltip.getBoundingClientRect();
+    if (tr.left < 8) tooltip.style.left = (left + (8 - tr.left)) + "px";
+    else if (tr.right > window.innerWidth - 8) tooltip.style.left = (left - (tr.right - window.innerWidth + 8)) + "px";
+    if (tr.bottom > window.innerHeight - 8) tooltip.style.top = (rect.top - tr.height - 6) + "px";
+  });
+}
+
+let activeWord = null;
+nceRoot.addEventListener("click", (e) => {
+  const spkBtn = e.target.closest(".spk");
+  if (spkBtn) {
+    e.stopPropagation();
+    const word = spkBtn.dataset.word;
+    const isUK = spkBtn.dataset.accent === "uk";
+    let voice = selectedVoice;
+    if (voices.length > 0) {
+      const targetLang = isUK ? 'en-GB' : 'en-US';
+      const found = voices.find(v => v.lang === targetLang);
+      if (found) voice = found;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(word);
+    u.voice = voice; u.lang = voice.lang;
+    u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+    spkBtn.classList.add("playing");
+    u.onend = () => spkBtn.classList.remove("playing");
+    u.onerror = () => spkBtn.classList.remove("playing");
+    window.speechSynthesis.speak(u);
+    return;
+  }
+  const el = e.target.closest(".w");
+  if (!el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  const word = el.dataset.word;
+  if (activeWord === el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  activeWord = el;
+  showTip(el, word);
+  speak(word, el);
+});
+document.addEventListener("click", (e) => {
+  if (!nceRoot.contains(e.target)) { tooltip.classList.remove("show"); activeWord = null; }
+});
+</script>
+<style id="mobile-adapt">
+@media (max-width: 600px) {
+  html { -webkit-text-size-adjust: 100%; }
+  .nce-wrap { padding: 18px 10px calc(60px + env(safe-area-inset-bottom)); }
+  .nce-wrap h1 { font-size: 19px; }
+  .nce-wrap .sub { font-size: 12px; margin-bottom: 18px; padding-bottom: 12px; }
+  .nce-wrap .passage, .nce-wrap .dc { padding: 16px 14px; font-size: 16.5px; line-height: 2.05; }
+  .nce-wrap .dc { font-size: 15px; line-height: 1.85; }
+  .nce-wrap summary { padding: 12px 14px; font-size: 13px; }
+  .nce-wrap .voice-bar { flex-wrap: wrap; padding: 8px 12px; gap: 8px; }
+  .nce-wrap .voice-bar select { flex: 1 1 140px; min-width: 0; }
+  .nav-bar { padding: 8px 10px; gap: 4px; }
+  .nav-bar a { font-size: 13px; padding: 8px 8px; }
+  .nce-wrap .hint { font-size: 11px; }
+  .nce-wrap .tip {
+    left: 50% !important; top: auto !important;
+    bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    transform: translateX(-50%) !important;
+    width: calc(100vw - 20px); max-width: 460px;
+    font-size: 15px; padding: 14px 16px;
+  }
+  .nce-wrap .tip .spk { padding: 9px 16px; font-size: 13px; }
+}
+</style>
+</body>
+</html>

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 71 — A Famous Clock</title>
+</head>
+<body>
+<style>
+  .nce-wrap { font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif; background: #faf8f5; color: #333; line-height: 1.8; padding: 32px 16px; max-width: 720px; margin: 0 auto; position: relative; }
+  .nce-wrap h1 { font-size: 22px; font-weight: 700; color: #2c2c2c; margin-bottom: 4px; }
+  .nce-wrap .sub { font-size: 13px; color: #999; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid #e8e2da; }
+  .nce-wrap .stitle { font-size: 15px; font-weight: 600; color: #6b5c4d; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .nce-wrap .passage, .nce-wrap .dc { background: #fff; border-radius: 10px; padding: 22px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 24px; font-size: 17px; line-height: 2.1; }
+  .nce-wrap .w { cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background 0.15s, color 0.15s; position: relative; }
+  .nce-wrap .w:hover { background: #f0e8dc; }
+  .nce-wrap .w.hl { color: #8B5E3C; font-weight: 700; }
+  .nce-wrap .w.hl:hover { background: #f0e4d4; }
+  .nce-wrap .w.speaking { background: #e8dfd2; }
+  .nce-wrap .tip { position: fixed; background: #fff; border: 1px solid #e0d6c8; border-radius: 8px; padding: 12px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; font-size: 14px; line-height: 1.6; pointer-events: none; opacity: 0; transition: opacity 0.2s; max-width: 300px; }
+  .nce-wrap .tip.show { opacity: 1; pointer-events: auto; }
+  .nce-wrap .tip .tw { font-weight: 700; color: #8B5E3C; font-size: 15px; }
+  .nce-wrap .tip .tp { color: #999; font-size: 12px; margin-left: 6px; }
+  .nce-wrap .tip .tm { color: #555; margin-top: 4px; }
+  .nce-wrap .tip .tg { color: #6b5c4d; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0d6c8; font-size: 13px; line-height: 1.5; }
+  .nce-wrap .tip .spk-row { margin-top: 8px; display: flex; gap: 8px; }
+  .nce-wrap .tip .spk { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #b8a48e; font-size: 12px; pointer-events: auto; padding: 4px 10px; border-radius: 12px; border: 1px solid #e0d6c8; transition: all 0.15s; background: #faf8f5; }
+  .nce-wrap .tip .spk:hover { color: #8B5E3C; border-color: #8B5E3C; background: #fff; }
+  .nce-wrap .tip .spk.playing { color: #8B5E3C; border-color: #8B5E3C; background: #f5ede2; }
+  .nce-wrap details { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 16px; overflow: hidden; }
+  .nce-wrap summary { padding: 14px 22px; font-size: 14px; font-weight: 600; color: #6b5c4d; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px; transition: background 0.2s; list-style: none; }
+  .nce-wrap summary::-webkit-details-marker { display: none; }
+  .nce-wrap summary:hover { background: #faf5ef; }
+  .nce-wrap summary::before { content: "▶"; font-size: 10px; transition: transform 0.25s ease; display: inline-block; color: #b8a48e; }
+  .nce-wrap details[open] > summary::before { transform: rotate(90deg); }
+  .nce-wrap .dc { padding: 16px 22px 20px 22px; font-size: 15px; line-height: 1.9; color: #444; border-top: 1px solid #f0ebe4; margin-bottom: 0; }
+  .nce-wrap .dc p { margin-top: 14px; }
+  .nce-wrap .qa { margin-top: 16px; }
+  .nce-wrap .qa .q { font-weight: 600; color: #5a4a3a; margin-bottom: 4px; }
+  .nce-wrap .qa .a { color: #555; padding-left: 14px; border-left: 3px solid #e8ddd0; }
+  .nce-wrap .hint { font-size: 12px; color: #b8a48e; margin-bottom: 16px; text-align: right; }
+  .nce-wrap .voice-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nce-wrap .voice-bar label { font-size: 13px; color: #6b5c4d; font-weight: 600; }
+  .nce-wrap .voice-bar select { flex: 1; padding: 6px 10px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 13px; color: #555; background: #faf8f5; cursor: pointer; outline: none; }
+  .nce-wrap .voice-bar select:focus { border-color: #8B5E3C; }
+  .nce-wrap .voice-bar .test-btn { padding: 6px 12px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 12px; color: #6b5c4d; background: #faf8f5; cursor: pointer; transition: all 0.15s; }
+  .nce-wrap .voice-bar .test-btn:hover { border-color: #8B5E3C; color: #8B5E3C; }
+  .nav-bar { display: grid; grid-template-columns: 1fr auto 1fr auto; align-items: center; gap: 8px; margin-bottom: 20px; padding: 12px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nav-bar a { color: #8B5E3C; text-decoration: none; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  .nav-bar a:hover { background: #f0e8dc; }
+</style>
+
+<div class="nce-wrap" id="nceRoot">
+  <div class="nav-bar">
+    <a href="lesson70.html">← 上一课</a>
+    <span style="color:#999;font-size:13px">Lesson 71</span>
+    <a href="lesson72.html">下一课 →</a>
+    <a href="../index.html">返回目录</a>
+  </div>
+
+  <h1>Lesson 71 — A Famous Clock</h1>
+  <p class="sub">新概念英语 第二册</p>
+
+  <div class="voice-bar">
+    <label>发音：</label>
+    <select id="voiceSelect"></select>
+    <button class="test-btn" id="testVoice">试听</button>
+  </div>
+
+  <p class="stitle">课文原文</p>
+  <p class="hint">点击任意单词查看释义、语法和发音</p>
+  <div class="passage" data-sentences="When you visit London, one of the first things you will see is Big Ben, the famous clock which can be heard all over the world on the B.B.C.|If the Houses of Parliament had not been burned down in 1834,the great clock would never have been erected.|Big Ben takes its name from sir Benjamin Hall who was responsible for them making of the clock when the new Houses of Parliament were being built.|It is not only of immense size, but is extremely accurate as well.|Officials from Greenwich Observatory have the clock checked twicea day.|On the B.B.C.|you can hear the clock when it is actually striking because microphones are connected to the clock tower.|Big Ben has rarely gone wrong.|Once, however, it failed to give the correct time.|A painter who had been working on the tower hung a pot of paint on one of the hands and slowed it down!"></div>
+
+  <details open>
+    <summary>简单句口语复述</summary>
+    <div class="dc" data-sentences="Big Ben, London's famous clock, rings on the BBC around the world and can only be heard live because microphones connect it to broadcasts.|It rose after Parliament burned in 1834 and takes its name from Sir Benjamin Hall who built it.|Greenwich officials check it twice daily, and it has failed only once, when a painter hung a pot of paint on a hand and slowed the clock."></div>
+  </details>
+
+  <details open>
+    <summary>扩展口语问答参考</summary>
+    <div class="dc">
+      <div class="qa">
+        <p class="q" data-sentences="Do you know any famous clocks?"></p>
+        <p class="a" data-sentences="Yes, Big Ben is very famous.|It's the symbol of London.|I've seen it in many photographs.|It's impressive how accurately it keeps time."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="Have you ever visited a clock tower?"></p>
+        <p class="a" data-sentences="Yes, I visited one in my hometown.|The clock mechanism was fascinating.|I could see all the gears working.|It made me appreciate simple machines."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="Why are famous landmarks important?"></p>
+        <p class="a" data-sentences="They represent cultural heritage.|They attract tourists from around the world.|They give cities their identity.|Preserving them honors our history."></p>
+      </div>
+    </div>
+  </details>
+
+  <div class="tip" id="tooltip"></div>
+</div>
+
+<script>
+const dict = {
+  "a": {"pos":"art.","meaning":"一个","grammar":"不定冠词"},
+  "accurate": {"pos": "adj.", "meaning": "精确的", "grammar": "形容词，修饰名词或作表语。"},
+  "accurately": {"pos": "adv.", "meaning": "accurate的地", "grammar": "副词后缀"},
+  "actually": {"pos": "adv.", "meaning": "实际上", "grammar": "副词"},
+  "all": {"pos":"adj.","meaning":"所有的","grammar":"形容词"},
+  "and": {"pos":"conj.","meaning":"和","grammar":"并列连词"},
+  "any": {"pos":"adj.","meaning":"任何","grammar":"形容词"},
+  "appreciate": {"pos": "v.", "meaning": "欣赏/感激", "grammar": "动词原形"},
+  "are": {"pos":"v.","meaning":"是","grammar":"be动词，复数/第二人称"},
+  "around": {"pos": "adv.", "meaning": "周围", "grammar": "副词"},
+  "as": {"pos":"prep.","meaning":"作为","grammar":"介词"},
+  "attract": {"pos": "v.", "meaning": "吸引", "grammar": "动词原形"},
+  "b": {"pos": "n.", "meaning": "字母 B（原文片段/缩写）", "grammar": "名词，可在句中作主语或宾语。"},
+  "be": {"pos":"v.","meaning":"是","grammar":"be动词原形"},
+  "because": {"pos":"conj.","meaning":"因为","grammar":"原因连词"},
+  "been": {"pos":"v.","meaning":"去过/been","grammar":"be的过去分词"},
+  "being": {"pos":"v.","meaning":"正在是","grammar":"be的现在分词"},
+  "ben": {"pos": "n.", "meaning": "本（人名）", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "benjamin": {"pos": "n.", "meaning": "本杰明（人名）", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "big": {"pos":"adj.","meaning":"大的","grammar":"形容词"},
+  "built": {"pos":"v.","meaning":"建造了","grammar":"build的过去式"},
+  "burned": {"pos": "v.", "meaning": "燃烧了", "grammar": "burn的过去式"},
+  "but": {"pos":"conj.","meaning":"但是","grammar":"转折连词"},
+  "c": {"pos": "n.", "meaning": "字母 C（原文片段/缩写）", "grammar": "名词，可在句中作主语或宾语。"},
+  "can": {"pos":"aux.","meaning":"能","grammar":"情态动词，表能力"},
+  "checked": {"pos": "adj.", "meaning": "check的被的", "grammar": "形容词/过去分词"},
+  "cities": {"pos": "n.", "meaning": "城市", "grammar": "名词复数形式。"},
+  "clock": {"pos":"n.","meaning":"钟","grammar":"名词"},
+  "clocks": {"pos": "n.", "meaning": "clock（复数）", "grammar": "名词复数"},
+  "connected": {"pos": "adj.", "meaning": "connect的被的", "grammar": "形容词/过去分词"},
+  "correct": {"pos":"adj.","meaning":"正确的","grammar":"形容词"},
+  "could": {"pos":"aux.","meaning":"能（过去式）","grammar":"can的过去式"},
+  "cultural": {"pos": "adj.", "meaning": "cultur的与有关的", "grammar": "形容词后缀"},
+  "day": {"pos":"n.","meaning":"天","grammar":"名词"},
+  "do": {"pos":"v.","meaning":"做","grammar":"助动词/实义动词"},
+  "down": {"pos":"prep.","meaning":"沿着","grammar":"介词"},
+  "erected": {"pos": "adj.", "meaning": "erect的被的", "grammar": "形容词/过去分词"},
+  "ever": {"pos": "adv.", "meaning": "曾经", "grammar": "时间副词"},
+  "extremely": {"pos": "adv.", "meaning": "极其", "grammar": "程度副词"},
+  "failed": {"pos": "v.", "meaning": "失败了", "grammar": "fail的过去式"},
+  "famous": {"pos":"adj.","meaning":"著名的","grammar":"形容词"},
+  "fascinating": {"pos": "n.", "meaning": "fascinat的的行为", "grammar": "名词/动名词"},
+  "first": {"pos":"adj.","meaning":"第一","grammar":"序数词"},
+  "for": {"pos":"prep.","meaning":"为了","grammar":"介词"},
+  "from": {"pos":"prep.","meaning":"从","grammar":"介词"},
+  "gears": {"pos": "n.", "meaning": "齿轮；挡位（gear 复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "give": {"pos":"v.","meaning":"给","grammar":"动词原形"},
+  "gone": {"pos":"v.","meaning":"去了","grammar":"go的过去分词"},
+  "great": {"pos":"adj.","meaning":"伟大的","grammar":"形容词"},
+  "greenwich": {"pos": "n.", "meaning": "格林尼治（伦敦地名）", "grammar": "名词，可在句中作主语或宾语。"},
+  "had": {"pos":"v.","meaning":"有（过去式）","grammar":"have的过去式"},
+  "hall": {"pos":"n.","meaning":"大厅","grammar":"名词"},
+  "hands": {"pos": "n.", "meaning": "手", "grammar": "名词复数形式。"},
+  "has": {"pos":"v.","meaning":"有（三单）","grammar":"have的第三人称单数"},
+  "have": {"pos":"v.","meaning":"有","grammar":"动词，have/has有"},
+  "hear": {"pos":"v.","meaning":"听到","grammar":"动词原形"},
+  "heard": {"pos":"v.","meaning":"听到了","grammar":"hear的过去式"},
+  "heritage": {"pos": "n.", "meaning": "遗产（文化）", "grammar": "名词，可在句中作主语或宾语。"},
+  "history": {"pos": "n.", "meaning": "历史", "grammar": "名词，可在句中作主语或宾语。"},
+  "hometown": {"pos": "n.", "meaning": "家乡", "grammar": "名词，可在句中作主语或宾语。"},
+  "honors": {"pos": "n.", "meaning": "（美）荣誉；优等成绩（honor 复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "houses": {"pos": "n.", "meaning": "房屋（house 复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "how": {"pos":"adv.","meaning":"怎样","grammar":"疑问副词"},
+  "however": {"pos":"adv.","meaning":"然而","grammar":"转折副词"},
+  "hung": {"pos":"v.","meaning":"挂了","grammar":"hang的过去式"},
+  "i": {"pos":"pron.","meaning":"我","grammar":"代词主格，作主语"},
+  "i've": {"pos":"pron.","meaning":"我已经","grammar":"I have缩写"},
+  "identity": {"pos": "n.", "meaning": "ident的的性质", "grammar": "名词后缀"},
+  "if": {"pos":"conj.","meaning":"如果","grammar":"条件连词"},
+  "immense": {"pos": "adj.", "meaning": "巨大的；无限的", "grammar": "形容词，修饰名词或作表语。"},
+  "important": {"pos":"adj.","meaning":"重要的","grammar":"形容词"},
+  "impressive": {"pos": "adj.", "meaning": "impress的有倾向的", "grammar": "形容词后缀"},
+  "in": {"pos":"prep.","meaning":"在…里","grammar":"介词"},
+  "is": {"pos":"v.","meaning":"是","grammar":"be动词，第三人称单数"},
+  "it": {"pos":"pron.","meaning":"它","grammar":"代词"},
+  "it's": {"pos":"v.","meaning":"它是","grammar":" "},
+  "its": {"pos":"pron.","meaning":"它的","grammar":"形容词性物主代词"},
+  "keeps": {"pos": "v.", "meaning": "保持（三单）", "grammar": "keep的三单"},
+  "know": {"pos":"v.","meaning":"知道","grammar":"动词原形"},
+  "landmarks": {"pos": "n.", "meaning": "地标（landmark 复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "london": {"pos": "n.", "meaning": "伦敦", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "machines": {"pos": "n.", "meaning": "机器", "grammar": "名词复数形式。"},
+  "made": {"pos":"v.","meaning":"做了","grammar":"make的过去式"},
+  "making": {"pos": "v.", "meaning": "做", "grammar": "make的现在分词"},
+  "many": {"pos":"adj.","meaning":"许多","grammar":"形容词"},
+  "me": {"pos":"pron.","meaning":"我","grammar":"代词宾格"},
+  "mechanism": {"pos": "n.", "meaning": "mechan的主义", "grammar": "名词后缀"},
+  "microphones": {"pos": "n.", "meaning": "麦克风（复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "my": {"pos":"pron.","meaning":"我的","grammar":"形容词性物主代词"},
+  "name": {"pos":"n.","meaning":"名字","grammar":"名词"},
+  "never": {"pos":"adv.","meaning":"从不","grammar":"频率副词"},
+  "new": {"pos":"adj.","meaning":"新的","grammar":"形容词"},
+  "not": {"pos":"adv.","meaning":"不","grammar":"否定副词"},
+  "observatory": {"pos": "n.", "meaning": "天文台", "grammar": "名词，可在句中作主语或宾语。"},
+  "of": {"pos":"prep.","meaning":"…的","grammar":"介词"},
+  "officials": {"pos": "n.", "meaning": "官员（official 复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "on": {"pos":"prep.","meaning":"在…上","grammar":"介词"},
+  "once": {"pos": "adv.", "meaning": "一次/曾经", "grammar": "频率副词"},
+  "one": {"pos": "num.", "meaning": "一；一个", "grammar": "数词，表示数量或顺序。"},
+  "only": {"pos":"adv.","meaning":"仅仅","grammar":"限制副词"},
+  "our": {"pos":"pron.","meaning":"我们的","grammar":"形容词性物主代词"},
+  "over": {"pos":"prep.","meaning":"在…上方","grammar":"介词"},
+  "paint": {"pos": "n.", "meaning": "油漆", "grammar": "名词，可在句中作主语或宾语。"},
+  "painter": {"pos": "n.", "meaning": "paint的的人/物", "grammar": "名词后缀，表执行者"},
+  "parliament": {"pos": "n.", "meaning": "parlia的的结果/行为", "grammar": "名词后缀"},
+  "photographs": {"pos": "n.", "meaning": "照片（photograph 复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "pot": {"pos": "n.", "meaning": "壶", "grammar": "名词，可在句中作主语或宾语。"},
+  "preserving": {"pos": "v.", "meaning": "保存", "grammar": "preserve的现在分词"},
+  "rarely": {"pos": "adv.", "meaning": "很少", "grammar": "频率副词"},
+  "represent": {"pos": "v.", "meaning": "代表", "grammar": "动词原形"},
+  "responsible": {"pos": "adj.", "meaning": "respons的能够的", "grammar": "形容词后缀"},
+  "see": {"pos":"v.","meaning":"看见","grammar":"动词原形"},
+  "seen": {"pos":"v.","meaning":"看见","grammar":"see的过去分词"},
+  "simple": {"pos": "adj.", "meaning": "简单的", "grammar": "形容词，修饰名词或作表语。"},
+  "sir": {"pos":"n.","meaning":"先生","grammar":"名词"},
+  "size": {"pos": "v.", "meaning": "大小", "grammar": "动词，在句中作谓语。"},
+  "slowed": {"pos": "adj.", "meaning": "slow的被的", "grammar": "形容词/过去分词"},
+  "striking": {"pos": "v.", "meaning": "敲", "grammar": "strike的现在分词"},
+  "symbol": {"pos": "n.", "meaning": "符号", "grammar": "名词，可在句中作主语或宾语。"},
+  "takes": {"pos": "n.", "meaning": "拿（复数）", "grammar": "名词复数"},
+  "the": {"pos":"art.","meaning":"这，那","grammar":"定冠词，特指"},
+  "their": {"pos":"pron.","meaning":"他们的","grammar":"形容词性物主代词"},
+  "them": {"pos":"pron.","meaning":"他们","grammar":"代词宾格"},
+  "they": {"pos":"pron.","meaning":"他们","grammar":"代词主格"},
+  "things": {"pos": "n.", "meaning": "东西", "grammar": "名词，可在句中作主语或宾语。"},
+  "time": {"pos":"n.","meaning":"时间","grammar":"名词"},
+  "to": {"pos":"prep.","meaning":"到","grammar":"介词"},
+  "tourists": {"pos": "n.", "meaning": "tour的主义者/专家", "grammar": "名词复数形式。 名词后缀"},
+  "tower": {"pos": "n.", "meaning": "tow的的人/物", "grammar": "名词后缀，表执行者"},
+  "twicea": {"pos": "n.", "meaning": "原文片段：疑为 twice a 的连写", "grammar": "名词，可在句中作主语或宾语。"},
+  "very": {"pos":"adv.","meaning":"非常","grammar":"程度副词"},
+  "visit": {"pos":"v.","meaning":"参观","grammar":"动词原形"},
+  "visited": {"pos":"v.","meaning":"参观了","grammar":"visit的过去式"},
+  "was": {"pos":"v.","meaning":"是（过去式）","grammar":"be动词过去式"},
+  "well": {"pos":"adv.","meaning":"好","grammar":"副词"},
+  "were": {"pos":"v.","meaning":"是（过去式）","grammar":"be动词过去式"},
+  "when": {"pos":"conj.","meaning":"当…时","grammar":"时间连词"},
+  "which": {"pos":"pron.","meaning":"哪个","grammar":"疑问代词"},
+  "who": {"pos":"pron.","meaning":"谁","grammar":"疑问代词"},
+  "why": {"pos":"adv.","meaning":"为什么","grammar":"疑问副词"},
+  "will": {"pos":"aux.","meaning":"将要","grammar":"情态动词，表将来"},
+  "working": {"pos": "v.", "meaning": "工作", "grammar": "work的现在分词"},
+  "world": {"pos":"n.","meaning":"世界","grammar":"名词"},
+  "would": {"pos":"aux.","meaning":"将会","grammar":"will的过去式/虚拟语气"},
+  "wrong": {"pos":"adj.","meaning":"错误的","grammar":"形容词"},
+  "yes": {"pos":"int.","meaning":"是的","grammar":"肯定回答"},
+  "you": {"pos":"pron.","meaning":"你，你们","grammar":"代词"},
+};
+
+const hlWords = new Set(["visit", "london", "things", "ben", "famous", "clock", "heard", "world", "houses", "parliament", "burned", "erected", "takes", "sir", "benjamin", "hall", "responsible", "built", "immense", "size", "extremely", "accurate", "officials", "greenwich"]);
+
+const tooltip = document.getElementById("tooltip");
+const nceRoot = document.getElementById("nceRoot");
+const voiceSelect = document.getElementById("voiceSelect");
+const testBtn = document.getElementById("testVoice");
+
+let voices = [];
+let selectedVoice = null;
+
+function loadVoices() {
+  voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return;
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+  voiceSelect.innerHTML = '';
+  const groups = { 'US': [], 'UK': [], 'Other': [] };
+  enVoices.forEach(v => {
+    const name = v.name.toLowerCase();
+    if (name.includes('us') || name.includes('american') || v.lang === 'en-US') groups['US'].push(v);
+    else if (name.includes('uk') || name.includes('british') || v.lang === 'en-GB') groups['UK'].push(v);
+    else groups['Other'].push(v);
+  });
+  const preferUS = ['Samantha', 'Alex', 'Tom'];
+  const preferUK = ['Daniel', 'Kate', 'Serena'];
+  function sortVoices(list, pref) {
+    return list.sort((a, b) => {
+      const ai = pref.findIndex(p => a.name.includes(p));
+      const bi = pref.findIndex(p => b.name.includes(p));
+      if (ai !== -1 && bi === -1) return -1;
+      if (ai === -1 && bi !== -1) return 1;
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      return a.name.localeCompare(b.name);
+    });
+  }
+  groups['US'] = sortVoices(groups['US'], preferUS);
+  groups['UK'] = sortVoices(groups['UK'], preferUK);
+  if (groups['US'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇺🇸 美式发音';
+    groups['US'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      if (i === 0 && !selectedVoice) { selectedVoice = v; opt.selected = true; }
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['UK'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇬🇧 英式发音';
+    groups['UK'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['Other'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '其他';
+    groups['Other'].forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+}
+
+loadVoices();
+if (typeof speechSynthesis !== 'undefined') speechSynthesis.onvoiceschanged = loadVoices;
+
+voiceSelect.addEventListener('change', () => { selectedVoice = voices[parseInt(voiceSelect.value)]; });
+testBtn.addEventListener('click', () => {
+  if (!selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance('Hello, this is a test.');
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  window.speechSynthesis.speak(u);
+});
+
+function wrapSentences(el) {
+  const data = el.getAttribute("data-sentences");
+  if (!data) return;
+  const sentences = data.split("|");
+  let html = "";
+  sentences.forEach((s, si) => {
+    const tokens = s.match(/[\w']+|[^\w']+/g) || [];
+    for (const tok of tokens) {
+      if (/^[\w']+$/.test(tok)) {
+        const lower = tok.toLowerCase();
+        const isHl = hlWords.has(lower);
+        html += `<span class="w${isHl ? ' hl' : ''}" data-word="${lower}" data-sentence="${encodeURIComponent(s)}">${tok}</span>`;
+      } else html += tok;
+    }
+    if (si < sentences.length - 1) html += " ";
+  });
+  el.innerHTML = html;
+}
+
+document.querySelectorAll("[data-sentences]").forEach(wrapSentences);
+
+function speak(word, el) {
+  if (!('speechSynthesis' in window) || !selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  el.classList.add("speaking");
+  u.onend = () => el.classList.remove("speaking");
+  u.onerror = () => el.classList.remove("speaking");
+  window.speechSynthesis.speak(u);
+}
+
+function showTip(el, word) {
+  const info = dict[word];
+  const rect = el.getBoundingClientRect();
+  let grammarText = info && info.grammar ? info.grammar : "暂无语法解释";
+  if (info) {
+    tooltip.innerHTML = `<span class="tw">${word}</span><span class="tp">${info.pos}</span><div class="tm">${info.meaning}</div><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  } else {
+    tooltip.innerHTML = `<span class="tw">${word}</span><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  }
+  let left = rect.left + rect.width / 2;
+  let top = rect.bottom + 6;
+  tooltip.style.left = left + "px";
+  tooltip.style.top = top + "px";
+  tooltip.style.transform = "translateX(-50%)";
+  tooltip.classList.add("show");
+  requestAnimationFrame(() => {
+    const tr = tooltip.getBoundingClientRect();
+    if (tr.left < 8) tooltip.style.left = (left + (8 - tr.left)) + "px";
+    else if (tr.right > window.innerWidth - 8) tooltip.style.left = (left - (tr.right - window.innerWidth + 8)) + "px";
+    if (tr.bottom > window.innerHeight - 8) tooltip.style.top = (rect.top - tr.height - 6) + "px";
+  });
+}
+
+let activeWord = null;
+nceRoot.addEventListener("click", (e) => {
+  const spkBtn = e.target.closest(".spk");
+  if (spkBtn) {
+    e.stopPropagation();
+    const word = spkBtn.dataset.word;
+    const isUK = spkBtn.dataset.accent === "uk";
+    let voice = selectedVoice;
+    if (voices.length > 0) {
+      const targetLang = isUK ? 'en-GB' : 'en-US';
+      const found = voices.find(v => v.lang === targetLang);
+      if (found) voice = found;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(word);
+    u.voice = voice; u.lang = voice.lang;
+    u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+    spkBtn.classList.add("playing");
+    u.onend = () => spkBtn.classList.remove("playing");
+    u.onerror = () => spkBtn.classList.remove("playing");
+    window.speechSynthesis.speak(u);
+    return;
+  }
+  const el = e.target.closest(".w");
+  if (!el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  const word = el.dataset.word;
+  if (activeWord === el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  activeWord = el;
+  showTip(el, word);
+  speak(word, el);
+});
+document.addEventListener("click", (e) => {
+  if (!nceRoot.contains(e.target)) { tooltip.classList.remove("show"); activeWord = null; }
+});
+</script>
+<style id="mobile-adapt">
+@media (max-width: 600px) {
+  html { -webkit-text-size-adjust: 100%; }
+  .nce-wrap { padding: 18px 10px calc(60px + env(safe-area-inset-bottom)); }
+  .nce-wrap h1 { font-size: 19px; }
+  .nce-wrap .sub { font-size: 12px; margin-bottom: 18px; padding-bottom: 12px; }
+  .nce-wrap .passage, .nce-wrap .dc { padding: 16px 14px; font-size: 16.5px; line-height: 2.05; }
+  .nce-wrap .dc { font-size: 15px; line-height: 1.85; }
+  .nce-wrap summary { padding: 12px 14px; font-size: 13px; }
+  .nce-wrap .voice-bar { flex-wrap: wrap; padding: 8px 12px; gap: 8px; }
+  .nce-wrap .voice-bar select { flex: 1 1 140px; min-width: 0; }
+  .nav-bar { padding: 8px 10px; gap: 4px; }
+  .nav-bar a { font-size: 13px; padding: 8px 8px; }
+  .nce-wrap .hint { font-size: 11px; }
+  .nce-wrap .tip {
+    left: 50% !important; top: auto !important;
+    bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    transform: translateX(-50%) !important;
+    width: calc(100vw - 20px); max-width: 460px;
+    font-size: 15px; padding: 14px 16px;
+  }
+  .nce-wrap .tip .spk { padding: 9px 16px; font-size: 13px; }
+}
+</style>
+</body>
+</html>
