@@ -1,0 +1,400 @@
+<style>
+  .nce-wrap { font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif; background: #faf8f5; color: #333; line-height: 1.8; padding: 32px 16px; max-width: 720px; margin: 0 auto; position: relative; }
+  .nce-wrap h1 { font-size: 22px; font-weight: 700; color: #2c2c2c; margin-bottom: 4px; }
+  .nce-wrap .sub { font-size: 13px; color: #999; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid #e8e2da; }
+  .nce-wrap .stitle { font-size: 15px; font-weight: 600; color: #6b5c4d; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .nce-wrap .passage, .nce-wrap .dc { background: #fff; border-radius: 10px; padding: 22px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 24px; font-size: 17px; line-height: 2.1; }
+  .nce-wrap .w { cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background 0.15s, color 0.15s; position: relative; }
+  .nce-wrap .w:hover { background: #f0e8dc; }
+  .nce-wrap .w.hl { color: #8B5E3C; font-weight: 700; }
+  .nce-wrap .w.hl:hover { background: #f0e4d4; }
+  .nce-wrap .w.speaking { background: #e8dfd2; }
+  .nce-wrap .tip { position: fixed; background: #fff; border: 1px solid #e0d6c8; border-radius: 8px; padding: 12px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; font-size: 14px; line-height: 1.6; pointer-events: none; opacity: 0; transition: opacity 0.2s; max-width: 300px; }
+  .nce-wrap .tip.show { opacity: 1; pointer-events: auto; }
+  .nce-wrap .tip .tw { font-weight: 700; color: #8B5E3C; font-size: 15px; }
+  .nce-wrap .tip .tp { color: #999; font-size: 12px; margin-left: 6px; }
+  .nce-wrap .tip .tm { color: #555; margin-top: 4px; }
+  .nce-wrap .tip .tg { color: #6b5c4d; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0d6c8; font-size: 13px; line-height: 1.5; }
+  .nce-wrap .tip .spk-row { margin-top: 8px; display: flex; gap: 8px; }
+  .nce-wrap .tip .spk { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #b8a48e; font-size: 12px; pointer-events: auto; padding: 4px 10px; border-radius: 12px; border: 1px solid #e0d6c8; transition: all 0.15s; background: #faf8f5; }
+  .nce-wrap .tip .spk:hover { color: #8B5E3C; border-color: #8B5E3C; background: #fff; }
+  .nce-wrap .tip .spk.playing { color: #8B5E3C; border-color: #8B5E3C; background: #f5ede2; }
+  .nce-wrap details { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 16px; overflow: hidden; }
+  .nce-wrap summary { padding: 14px 22px; font-size: 14px; font-weight: 600; color: #6b5c4d; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px; transition: background 0.2s; list-style: none; }
+  .nce-wrap summary::-webkit-details-marker { display: none; }
+  .nce-wrap summary:hover { background: #faf5ef; }
+  .nce-wrap summary::before { content: "▶"; font-size: 10px; transition: transform 0.25s ease; display: inline-block; color: #b8a48e; }
+  .nce-wrap details[open] > summary::before { transform: rotate(90deg); }
+  .nce-wrap .dc { padding: 16px 22px 20px 22px; font-size: 15px; line-height: 1.9; color: #444; border-top: 1px solid #f0ebe4; margin-bottom: 0; }
+  .nce-wrap .dc p { margin-top: 14px; }
+  .nce-wrap .qa { margin-top: 16px; }
+  .nce-wrap .qa .q { font-weight: 600; color: #5a4a3a; margin-bottom: 4px; }
+  .nce-wrap .qa .a { color: #555; padding-left: 14px; border-left: 3px solid #e8ddd0; }
+  .nce-wrap .hint { font-size: 12px; color: #b8a48e; margin-bottom: 16px; text-align: right; }
+  .nce-wrap .voice-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nce-wrap .voice-bar label { font-size: 13px; color: #6b5c4d; font-weight: 600; }
+  .nce-wrap .voice-bar select { flex: 1; padding: 6px 10px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 13px; color: #555; background: #faf8f5; cursor: pointer; outline: none; }
+  .nce-wrap .voice-bar select:focus { border-color: #8B5E3C; }
+  .nce-wrap .voice-bar .test-btn { padding: 6px 12px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 12px; color: #6b5c4d; background: #faf8f5; cursor: pointer; transition: all 0.15s; }
+  .nce-wrap .voice-bar .test-btn:hover { border-color: #8B5E3C; color: #8B5E3C; }
+  .nav-bar { display: grid; grid-template-columns: 1fr auto 1fr auto; align-items: center; gap: 8px; margin-bottom: 20px; padding: 12px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nav-bar a { color: #8B5E3C; text-decoration: none; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  .nav-bar a:hover { background: #f0e8dc; }
+</style>
+
+<div class="nce-wrap" id="nceRoot">
+  <div class="nav-bar">
+    <a href="lesson24.html">← 上一课</a>
+    <span style="color:#999;font-size:13px">Lesson 25</span>
+    <a href="lesson26.html">下一课 →</a>
+    <a href="../index.html">返回目录</a>
+  </div>
+
+  <h1>Lesson 25 — Do The English Speak English</h1>
+  <p class="sub">新概念英语 第二册</p>
+
+  <div class="voice-bar">
+    <label>发音：</label>
+    <select id="voiceSelect"></select>
+    <button class="test-btn" id="testVoice">试听</button>
+  </div>
+
+  <p class="stitle">课文原文</p>
+  <p class="hint">点击任意单词查看释义、语法和发音</p>
+  <div class="passage" data-sentences="I arrived in London at last.|The railway station was big, black and dark.|I did not know the way to my hotel, so I asked a porter.|I not only spoke English very carefully, but very clearly as well.|The porter, however, could not understand me.|I repeated my question several times and at last he understood.|He answered me, but he spoke neither slowly nor clearly.|‘I am a foreigner, ’ I said.|Then he spoke slowly, but I could not understand him.|My teacher never spoke English like that!|The porter and I looked at each other and smiled.|Then he said something and I understood it.|‘You'll soon learn English!’ he said.|I wonder.|In England, each person speaks a different language.|The English understand each other, but I don't understand them!|Do they speak English?"></div>
+
+  <details>
+    <summary>简单句口语复述</summary>
+    <div class="dc" data-sentences="Arriving in London, the writer asked a porter the way to his hotel, speaking English very carefully and clearly.|Yet the porter could not understand him at first, and when he did answer, the writer could not understand him either.|Then the porter said, 'You'll soon learn English!'|The writer wonders how the English understand each other at all."></div>
+  </details>
+
+  <details>
+    <summary>扩展口语问答参考</summary>
+    <div class="dc">
+      <div class="qa">
+        <p class="q" data-sentences="Can you speak English well?"></p>
+        <p class="a" data-sentences="I'm still learning and improving.|I can understand quite a lot now.|But speaking confidently is still hard.|Practice makes perfect, so I keep trying."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="Have you ever been to an English-speaking country?"></p>
+        <p class="a" data-sentences="No, I haven't had the chance yet.|But I'd love to visit England someday.|It would be great to practice English there.|Immersing yourself is the best way to learn."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="Do the English speak the same as Americans?"></p>
+        <p class="a" data-sentences="Not exactly, there are many differences.|The accent and some vocabulary are different.|But they can understand each other easily.|Both varieties of English are beautiful."></p>
+      </div>
+    </div>
+  </details>
+
+  <div class="tip" id="tooltip"></div>
+</div>
+
+<script>
+const dict = {
+  "a": {"pos":"art.","meaning":"一个","grammar":"不定冠词"},
+  "accent": {"pos": "n.", "meaning": "口音", "grammar": "名词，可在句中作主语或宾语。"},
+  "am": {"pos":"v.","meaning":"是","grammar":"be动词，第一人称"},
+  "americans": {"pos": "n.", "meaning": "american（复数）", "grammar": "名词复数"},
+  "an": {"pos":"art.","meaning":"一个","grammar":"不定冠词，用于元音前"},
+  "and": {"pos":"conj.","meaning":"和","grammar":"并列连词"},
+  "answered": {"pos": "v.", "meaning": "回答了", "grammar": "answer的过去式"},
+  "are": {"pos":"v.","meaning":"是","grammar":"be动词，复数/第二人称"},
+  "arrived": {"pos": "v.", "meaning": "到达了", "grammar": "arrive的过去式"},
+  "as": {"pos":"prep.","meaning":"作为","grammar":"介词"},
+  "asked": {"pos":"v.","meaning":"问了","grammar":"ask的过去式"},
+  "at": {"pos":"prep.","meaning":"在","grammar":"介词"},
+  "be": {"pos":"v.","meaning":"是","grammar":"be动词原形"},
+  "beautiful": {"pos":"adj.","meaning":"美丽的","grammar":"形容词"},
+  "been": {"pos":"v.","meaning":"去过/been","grammar":"be的过去分词"},
+  "best": {"pos": "v.", "meaning": "是", "grammar": "最高级形式。 be动词原形"},
+  "big": {"pos":"adj.","meaning":"大的","grammar":"形容词"},
+  "black": {"pos":"adj.","meaning":"黑色的","grammar":"形容词"},
+  "both": {"pos":"adj.","meaning":"两者都","grammar":"形容词"},
+  "but": {"pos":"conj.","meaning":"但是","grammar":"转折连词"},
+  "can": {"pos":"aux.","meaning":"能","grammar":"情态动词，表能力"},
+  "carefully": {"pos":"adv.","meaning":"仔细地","grammar":"方式副词"},
+  "chance": {"pos": "n.", "meaning": "机会", "grammar": "名词，可在句中作主语或宾语。"},
+  "clearly": {"pos": "adv.", "meaning": "清楚地", "grammar": "副词"},
+  "confidently": {"pos": "adv.", "meaning": "confident的地", "grammar": "副词后缀"},
+  "could": {"pos":"aux.","meaning":"能（过去式）","grammar":"can的过去式"},
+  "country": {"pos":"n.","meaning":"国家","grammar":"名词"},
+  "dark": {"pos":"adj.","meaning":"黑暗的","grammar":"形容词"},
+  "did": {"pos":"aux.","meaning":"做（过去式）","grammar":"助动词过去式，构成否定/疑问"},
+  "differences": {"pos": "n.", "meaning": "differ的的状态/行为（复数）", "grammar": "名词复数"},
+  "different": {"pos":"adj.","meaning":"不同的","grammar":"形容词"},
+  "do": {"pos":"v.","meaning":"做","grammar":"助动词/实义动词"},
+  "don't": {"pos":"aux.","meaning":"不要","grammar":"do not缩写"},
+  "each": {"pos":"adj.","meaning":"每个","grammar":"形容词"},
+  "easily": {"pos": "adv.", "meaning": "容易地", "grammar": "方式副词"},
+  "england": {"pos": "n.", "meaning": "英格兰", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "english": {"pos": "n.", "meaning": "英语；英国的", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "ever": {"pos": "adv.", "meaning": "曾经", "grammar": "时间副词"},
+  "exactly": {"pos": "adv.", "meaning": "确切地", "grammar": "副词"},
+  "foreigner": {"pos": "n.", "meaning": "foreign的的人/物", "grammar": "名词后缀，表执行者"},
+  "great": {"pos":"adj.","meaning":"伟大的","grammar":"形容词"},
+  "had": {"pos":"v.","meaning":"有（过去式）","grammar":"have的过去式"},
+  "hard": {"pos":"adj.","meaning":"困难的","grammar":"形容词"},
+  "have": {"pos":"v.","meaning":"有","grammar":"动词，have/has有"},
+  "haven't": {"pos": "v.", "meaning": "没有", "grammar": "have not缩写"},
+  "he": {"pos":"pron.","meaning":"他","grammar":"代词主格，作主语"},
+  "him": {"pos":"pron.","meaning":"他","grammar":"代词宾格"},
+  "hotel": {"pos": "n.", "meaning": "旅馆", "grammar": "名词，可在句中作主语或宾语。"},
+  "however": {"pos":"adv.","meaning":"然而","grammar":"转折副词"},
+  "i": {"pos":"pron.","meaning":"我","grammar":"代词主格，作主语"},
+  "i'd": {"pos":"pron.","meaning":"我会","grammar":"I would缩写"},
+  "i'm": {"pos":"pron.","meaning":"我是","grammar":"I am缩写"},
+  "immersing": {"pos": "n.", "meaning": "immers的的行为", "grammar": "名词/动名词"},
+  "improving": {"pos": "v.", "meaning": "改善", "grammar": "improve的现在分词"},
+  "in": {"pos":"prep.","meaning":"在…里","grammar":"介词"},
+  "is": {"pos":"v.","meaning":"是","grammar":"be动词，第三人称单数"},
+  "it": {"pos":"pron.","meaning":"它","grammar":"代词"},
+  "keep": {"pos":"v.","meaning":"保持","grammar":"动词原形"},
+  "know": {"pos":"v.","meaning":"知道","grammar":"动词原形"},
+  "language": {"pos": "n.", "meaning": "语言", "grammar": "名词，可在句中作主语或宾语。"},
+  "last": {"pos":"adj.","meaning":"最后的","grammar":"形容词"},
+  "learn": {"pos":"v.","meaning":"学习","grammar":"动词原形"},
+  "learning": {"pos": "v.", "meaning": "学习", "grammar": "learn的现在分词"},
+  "like": {"pos":"prep.","meaning":"像","grammar":"介词"},
+  "london": {"pos": "n.", "meaning": "伦敦", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "looked": {"pos": "v.", "meaning": "看了", "grammar": "look的过去式"},
+  "lot": {"pos":"n.","meaning":"许多","grammar":"名词"},
+  "love": {"pos":"v.","meaning":"爱","grammar":"动词原形"},
+  "makes": {"pos": "v.", "meaning": "做（三单）", "grammar": "make的三单"},
+  "many": {"pos":"adj.","meaning":"许多","grammar":"形容词"},
+  "me": {"pos":"pron.","meaning":"我","grammar":"代词宾格"},
+  "my": {"pos":"pron.","meaning":"我的","grammar":"形容词性物主代词"},
+  "neither": {"pos":"pron.","meaning":"两者都不","grammar":"代词"},
+  "never": {"pos":"adv.","meaning":"从不","grammar":"频率副词"},
+  "no": {"pos":"adv.","meaning":"不","grammar":"否定回答"},
+  "nor": {"pos":"conj.","meaning":"也不","grammar":"连词"},
+  "not": {"pos":"adv.","meaning":"不","grammar":"否定副词"},
+  "now": {"pos":"adv.","meaning":"现在","grammar":"时间副词"},
+  "of": {"pos":"prep.","meaning":"…的","grammar":"介词"},
+  "only": {"pos":"adv.","meaning":"仅仅","grammar":"限制副词"},
+  "other": {"pos":"adj.","meaning":"其他","grammar":"形容词"},
+  "perfect": {"pos": "adj.", "meaning": "完美的", "grammar": "形容词，修饰名词或作表语。"},
+  "person": {"pos": "n.", "meaning": "人", "grammar": "名词，可在句中作主语或宾语。"},
+  "porter": {"pos": "n.", "meaning": "port的的人/物", "grammar": "名词后缀，表执行者"},
+  "practice": {"pos": "v.", "meaning": "练习", "grammar": "动词原形"},
+  "question": {"pos":"n.","meaning":"问题","grammar":"名词"},
+  "quite": {"pos":"adv.","meaning":"相当","grammar":"程度副词"},
+  "railway": {"pos": "n.", "meaning": "铁路", "grammar": "名词，可在句中作主语或宾语。"},
+  "repeated": {"pos": "v.", "meaning": "重复了", "grammar": "repeat的过去式"},
+  "said": {"pos":"v.","meaning":"说了","grammar":"say的过去式"},
+  "same": {"pos":"adj.","meaning":"相同的","grammar":"形容词"},
+  "several": {"pos":"adj.","meaning":"几个","grammar":"形容词"},
+  "slowly": {"pos":"adv.","meaning":"慢慢地","grammar":"方式副词"},
+  "smiled": {"pos": "v.", "meaning": "微笑了", "grammar": "smile的过去式"},
+  "so": {"pos":"conj.","meaning":"所以","grammar":"因果连词"},
+  "some": {"pos":"adj.","meaning":"一些","grammar":"形容词"},
+  "someday": {"pos": "adv.", "meaning": "（将来）某一天", "grammar": "副词，修饰动词或整个句子。"},
+  "something": {"pos":"pron.","meaning":"某事","grammar":"不定代词"},
+  "soon": {"pos":"adv.","meaning":"很快","grammar":"时间副词"},
+  "speak": {"pos":"v.","meaning":"说话","grammar":"动词原形"},
+  "speaking": {"pos": "v.", "meaning": "说话", "grammar": "speak的现在分词"},
+  "speaks": {"pos": "v.", "meaning": "说话（三单）", "grammar": "speak的三单"},
+  "spoke": {"pos": "v.", "meaning": "说了", "grammar": "speak的过去式"},
+  "station": {"pos":"n.","meaning":"站","grammar":"名词"},
+  "still": {"pos":"adv.","meaning":"仍然","grammar":"副词"},
+  "teacher": {"pos": "n.", "meaning": "teach的的人/物", "grammar": "名词后缀，表执行者"},
+  "that": {"pos":"pron.","meaning":"那","grammar":"指示代词/连词"},
+  "the": {"pos":"art.","meaning":"这，那","grammar":"定冠词，特指"},
+  "them": {"pos":"pron.","meaning":"他们","grammar":"代词宾格"},
+  "then": {"pos":"adv.","meaning":"然后/那时","grammar":"时间副词"},
+  "there": {"pos":"adv.","meaning":"那里","grammar":"地点副词"},
+  "they": {"pos":"pron.","meaning":"他们","grammar":"代词主格"},
+  "times": {"pos": "n.", "meaning": "time（复数）", "grammar": "名词复数"},
+  "to": {"pos":"prep.","meaning":"到","grammar":"介词"},
+  "trying": {"pos": "v.", "meaning": "尝试", "grammar": "try的现在分词"},
+  "understand": {"pos":"v.","meaning":"理解","grammar":"动词原形"},
+  "understood": {"pos": "v.", "meaning": "理解了", "grammar": "understand的过去式"},
+  "varieties": {"pos": "n.", "meaning": "多样性；品种（variety 复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "very": {"pos":"adv.","meaning":"非常","grammar":"程度副词"},
+  "visit": {"pos":"v.","meaning":"参观","grammar":"动词原形"},
+  "vocabulary": {"pos": "n.", "meaning": "词汇", "grammar": "名词，可在句中作主语或宾语。"},
+  "was": {"pos":"v.","meaning":"是（过去式）","grammar":"be动词过去式"},
+  "way": {"pos":"n.","meaning":"方式","grammar":"名词"},
+  "well": {"pos":"adv.","meaning":"好","grammar":"副词"},
+  "wonder": {"pos":"v.","meaning":"想知道","grammar":"动词原形"},
+  "would": {"pos":"aux.","meaning":"将会","grammar":"will的过去式/虚拟语气"},
+  "yet": {"pos": "adv.", "meaning": "还", "grammar": "时间副词"},
+  "you": {"pos":"pron.","meaning":"你，你们","grammar":"代词"},
+  "you'll": {"pos": "pron.", "meaning": "你将", "grammar": "you will缩写"},
+  "yourself": {"pos": "pron.", "meaning": "你自己", "grammar": "反身代词"},
+};
+
+const hlWords = new Set([]);
+
+const tooltip = document.getElementById("tooltip");
+const nceRoot = document.getElementById("nceRoot");
+const voiceSelect = document.getElementById("voiceSelect");
+const testBtn = document.getElementById("testVoice");
+
+let voices = [];
+let selectedVoice = null;
+
+function loadVoices() {
+  voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return;
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+  voiceSelect.innerHTML = '';
+  const groups = { 'US': [], 'UK': [], 'Other': [] };
+  enVoices.forEach(v => {
+    const name = v.name.toLowerCase();
+    if (name.includes('us') || name.includes('american') || v.lang === 'en-US') groups['US'].push(v);
+    else if (name.includes('uk') || name.includes('british') || v.lang === 'en-GB') groups['UK'].push(v);
+    else groups['Other'].push(v);
+  });
+  const preferUS = ['Samantha', 'Alex', 'Tom'];
+  const preferUK = ['Daniel', 'Kate', 'Serena'];
+  function sortVoices(list, pref) {
+    return list.sort((a, b) => {
+      const ai = pref.findIndex(p => a.name.includes(p));
+      const bi = pref.findIndex(p => b.name.includes(p));
+      if (ai !== -1 && bi === -1) return -1;
+      if (ai === -1 && bi !== -1) return 1;
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      return a.name.localeCompare(b.name);
+    });
+  }
+  groups['US'] = sortVoices(groups['US'], preferUS);
+  groups['UK'] = sortVoices(groups['UK'], preferUK);
+  if (groups['US'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇺🇸 美式发音';
+    groups['US'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      if (i === 0 && !selectedVoice) { selectedVoice = v; opt.selected = true; }
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['UK'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇬🇧 英式发音';
+    groups['UK'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['Other'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '其他';
+    groups['Other'].forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+}
+
+loadVoices();
+if (typeof speechSynthesis !== 'undefined') speechSynthesis.onvoiceschanged = loadVoices;
+
+voiceSelect.addEventListener('change', () => { selectedVoice = voices[parseInt(voiceSelect.value)]; });
+testBtn.addEventListener('click', () => {
+  if (!selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance('Hello, this is a test.');
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  window.speechSynthesis.speak(u);
+});
+
+function wrapSentences(el) {
+  const data = el.getAttribute("data-sentences");
+  if (!data) return;
+  const sentences = data.split("|");
+  let html = "";
+  sentences.forEach(s => {
+    const tokens = s.match(/[\w']+|[^\w']+/g) || [];
+    for (const tok of tokens) {
+      if (/^[\w']+$/.test(tok)) {
+        const lower = tok.toLowerCase();
+        const isHl = hlWords.has(lower);
+        html += `<span class="w${isHl ? ' hl' : ''}" data-word="${lower}" data-sentence="${encodeURIComponent(s)}">${tok}</span>`;
+      } else html += tok;
+    }
+  });
+  el.innerHTML = html;
+}
+
+document.querySelectorAll("[data-sentences]").forEach(wrapSentences);
+
+function speak(word, el) {
+  if (!('speechSynthesis' in window) || !selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  el.classList.add("speaking");
+  u.onend = () => el.classList.remove("speaking");
+  u.onerror = () => el.classList.remove("speaking");
+  window.speechSynthesis.speak(u);
+}
+
+function showTip(el, word) {
+  const info = dict[word];
+  const rect = el.getBoundingClientRect();
+  let grammarText = info && info.grammar ? info.grammar : "暂无语法解释";
+  if (info) {
+    tooltip.innerHTML = `<span class="tw">${word}</span><span class="tp">${info.pos}</span><div class="tm">${info.meaning}</div><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  } else {
+    tooltip.innerHTML = `<span class="tw">${word}</span><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  }
+  let left = rect.left + rect.width / 2;
+  let top = rect.bottom + 6;
+  tooltip.style.left = left + "px";
+  tooltip.style.top = top + "px";
+  tooltip.style.transform = "translateX(-50%)";
+  tooltip.classList.add("show");
+  requestAnimationFrame(() => {
+    const tr = tooltip.getBoundingClientRect();
+    if (tr.left < 8) tooltip.style.left = (left + (8 - tr.left)) + "px";
+    else if (tr.right > window.innerWidth - 8) tooltip.style.left = (left - (tr.right - window.innerWidth + 8)) + "px";
+    if (tr.bottom > window.innerHeight - 8) tooltip.style.top = (rect.top - tr.height - 6) + "px";
+  });
+}
+
+let activeWord = null;
+nceRoot.addEventListener("click", (e) => {
+  const spkBtn = e.target.closest(".spk");
+  if (spkBtn) {
+    e.stopPropagation();
+    const word = spkBtn.dataset.word;
+    const isUK = spkBtn.dataset.accent === "uk";
+    let voice = selectedVoice;
+    if (voices.length > 0) {
+      const targetLang = isUK ? 'en-GB' : 'en-US';
+      const found = voices.find(v => v.lang === targetLang);
+      if (found) voice = found;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(word);
+    u.voice = voice; u.lang = voice.lang;
+    u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+    spkBtn.classList.add("playing");
+    u.onend = () => spkBtn.classList.remove("playing");
+    u.onerror = () => spkBtn.classList.remove("playing");
+    window.speechSynthesis.speak(u);
+    return;
+  }
+  const el = e.target.closest(".w");
+  if (!el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  const word = el.dataset.word;
+  if (activeWord === el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  activeWord = el;
+  showTip(el, word);
+  speak(word, el);
+});
+document.addEventListener("click", (e) => {
+  if (!nceRoot.contains(e.target)) { tooltip.classList.remove("show"); activeWord = null; }
+});
+</script>

@@ -1,0 +1,437 @@
+<style>
+  .nce-wrap { font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif; background: #faf8f5; color: #333; line-height: 1.8; padding: 32px 16px; max-width: 720px; margin: 0 auto; position: relative; }
+  .nce-wrap h1 { font-size: 22px; font-weight: 700; color: #2c2c2c; margin-bottom: 4px; }
+  .nce-wrap .sub { font-size: 13px; color: #999; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid #e8e2da; }
+  .nce-wrap .stitle { font-size: 15px; font-weight: 600; color: #6b5c4d; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .nce-wrap .passage, .nce-wrap .dc { background: #fff; border-radius: 10px; padding: 22px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 24px; font-size: 17px; line-height: 2.1; }
+  .nce-wrap .w { cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background 0.15s, color 0.15s; position: relative; }
+  .nce-wrap .w:hover { background: #f0e8dc; }
+  .nce-wrap .w.hl { color: #8B5E3C; font-weight: 700; }
+  .nce-wrap .w.hl:hover { background: #f0e4d4; }
+  .nce-wrap .w.speaking { background: #e8dfd2; }
+  .nce-wrap .tip { position: fixed; background: #fff; border: 1px solid #e0d6c8; border-radius: 8px; padding: 12px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; font-size: 14px; line-height: 1.6; pointer-events: none; opacity: 0; transition: opacity 0.2s; max-width: 300px; }
+  .nce-wrap .tip.show { opacity: 1; pointer-events: auto; }
+  .nce-wrap .tip .tw { font-weight: 700; color: #8B5E3C; font-size: 15px; }
+  .nce-wrap .tip .tp { color: #999; font-size: 12px; margin-left: 6px; }
+  .nce-wrap .tip .tm { color: #555; margin-top: 4px; }
+  .nce-wrap .tip .tg { color: #6b5c4d; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0d6c8; font-size: 13px; line-height: 1.5; }
+  .nce-wrap .tip .spk-row { margin-top: 8px; display: flex; gap: 8px; }
+  .nce-wrap .tip .spk { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #b8a48e; font-size: 12px; pointer-events: auto; padding: 4px 10px; border-radius: 12px; border: 1px solid #e0d6c8; transition: all 0.15s; background: #faf8f5; }
+  .nce-wrap .tip .spk:hover { color: #8B5E3C; border-color: #8B5E3C; background: #fff; }
+  .nce-wrap .tip .spk.playing { color: #8B5E3C; border-color: #8B5E3C; background: #f5ede2; }
+  .nce-wrap details { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 16px; overflow: hidden; }
+  .nce-wrap summary { padding: 14px 22px; font-size: 14px; font-weight: 600; color: #6b5c4d; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px; transition: background 0.2s; list-style: none; }
+  .nce-wrap summary::-webkit-details-marker { display: none; }
+  .nce-wrap summary:hover { background: #faf5ef; }
+  .nce-wrap summary::before { content: "▶"; font-size: 10px; transition: transform 0.25s ease; display: inline-block; color: #b8a48e; }
+  .nce-wrap details[open] > summary::before { transform: rotate(90deg); }
+  .nce-wrap .dc { padding: 16px 22px 20px 22px; font-size: 15px; line-height: 1.9; color: #444; border-top: 1px solid #f0ebe4; margin-bottom: 0; }
+  .nce-wrap .dc p { margin-top: 14px; }
+  .nce-wrap .qa { margin-top: 16px; }
+  .nce-wrap .qa .q { font-weight: 600; color: #5a4a3a; margin-bottom: 4px; }
+  .nce-wrap .qa .a { color: #555; padding-left: 14px; border-left: 3px solid #e8ddd0; }
+  .nce-wrap .hint { font-size: 12px; color: #b8a48e; margin-bottom: 16px; text-align: right; }
+  .nce-wrap .voice-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nce-wrap .voice-bar label { font-size: 13px; color: #6b5c4d; font-weight: 600; }
+  .nce-wrap .voice-bar select { flex: 1; padding: 6px 10px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 13px; color: #555; background: #faf8f5; cursor: pointer; outline: none; }
+  .nce-wrap .voice-bar select:focus { border-color: #8B5E3C; }
+  .nce-wrap .voice-bar .test-btn { padding: 6px 12px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 12px; color: #6b5c4d; background: #faf8f5; cursor: pointer; transition: all 0.15s; }
+  .nce-wrap .voice-bar .test-btn:hover { border-color: #8B5E3C; color: #8B5E3C; }
+  .nav-bar { display: grid; grid-template-columns: 1fr auto 1fr auto; align-items: center; gap: 8px; margin-bottom: 20px; padding: 12px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nav-bar a { color: #8B5E3C; text-decoration: none; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  .nav-bar a:hover { background: #f0e8dc; }
+</style>
+
+<div class="nce-wrap" id="nceRoot">
+  <div class="nav-bar">
+    <a href="lesson77.html">← 上一课</a>
+    <span style="color:#999;font-size:13px">Lesson 78</span>
+    <a href="lesson79.html">下一课 →</a>
+    <a href="../index.html">返回目录</a>
+  </div>
+
+  <h1>Lesson 78 — The Last One</h1>
+  <p class="sub">新概念英语 第二册</p>
+
+  <div class="voice-bar">
+    <label>发音：</label>
+    <select id="voiceSelect"></select>
+    <button class="test-btn" id="testVoice">试听</button>
+  </div>
+
+  <p class="stitle">课文原文</p>
+  <p class="hint">点击任意单词查看释义、语法和发音</p>
+  <div class="passage" data-sentences="After reading an article entitled ‘Cigarette Smoking and Your Health’I lit a cigarette to calm my nerves.|I smoked with concentration and pleasure as I was sure that this would be my last cigarette.|For a whole week I did not smoke at all and during this time, my wife suffered terribly.|I had all the usual symptoms of someone giving up smoking: a bad temper and an enormous appetite.|My friends kept on offering me cigarettes and cigars.|They made no effort to hide their amusement whenever I produced a packet of sweets from my pocket.|After seven days of this I went to a party.|Everybody around me was smoking and I felt extremely uncomfortable.|When my old friend Brian urged me to accept a cigarette, it was more than I could bear.|I took one guiltily, lit it and smoked with satisfaction.|My wife was delighted that things had returned to normal once more.|Anyway, as Brian pointed out, it is the easiest thing in the world to give up smoking.|He himself has done it lots of times!"></div>
+
+  <details>
+    <summary>简单句口语复述</summary>
+    <div class="dc" data-sentences="Reading a health article, the writer smoked what he swore was his last cigarette, then endured a smoke-free week of bad temper and huge appetite, while friends teased his packet of sweets.|At a party, unable to resist Brian's offered cigarette, he lit up happily and his wife rejoiced that normal life returned.|Brian remarked that giving up smoking is the easiest thing in the world, having done it many times himself!"></div>
+  </details>
+
+  <details>
+    <summary>扩展口语问答参考</summary>
+    <div class="dc">
+      <div class="qa">
+        <p class="q" data-sentences="Do you like being the last one?"></p>
+        <p class="a" data-sentences="Sometimes it feels lonely being last.|But it means you've persevered.|Being last isn't always a bad thing.|What matters is finishing the race."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="Have you ever been the last to know something?"></p>
+        <p class="a" data-sentences="Yes, I was the last to hear some news.|Everyone else already knew about it.|I felt a bit out of the loop.|But I caught up eventually."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="What does it mean to be last in a competition?"></p>
+        <p class="a" data-sentences="Being last means you still participated.|It takes courage to compete at all.|Every competitor deserves respect.|The experience matters more than the position."></p>
+      </div>
+    </div>
+  </details>
+
+  <div class="tip" id="tooltip"></div>
+</div>
+
+<script>
+const dict = {
+  "a": {"pos":"art.","meaning":"一个","grammar":"不定冠词"},
+  "about": {"pos":"prep.","meaning":"关于","grammar":"介词"},
+  "accept": {"pos": "v.", "meaning": "接受", "grammar": "动词原形"},
+  "after": {"pos":"prep.","meaning":"在…之后","grammar":"介词"},
+  "all": {"pos":"adj.","meaning":"所有的","grammar":"形容词"},
+  "already": {"pos":"adv.","meaning":"已经","grammar":"时间副词"},
+  "always": {"pos":"adv.","meaning":"总是","grammar":"频率副词"},
+  "amusement": {"pos": "n.", "meaning": "amuse的的结果/行为", "grammar": "名词后缀"},
+  "an": {"pos":"art.","meaning":"一个","grammar":"不定冠词，用于元音前"},
+  "and": {"pos":"conj.","meaning":"和","grammar":"并列连词"},
+  "anyway": {"pos": "adv.", "meaning": "无论如何", "grammar": "副词"},
+  "appetite": {"pos": "n.", "meaning": "食欲", "grammar": "名词，可在句中作主语或宾语。"},
+  "around": {"pos": "adv.", "meaning": "周围", "grammar": "副词"},
+  "article": {"pos": "n.", "meaning": "文章", "grammar": "名词，可在句中作主语或宾语。"},
+  "as": {"pos":"prep.","meaning":"作为","grammar":"介词"},
+  "at": {"pos":"prep.","meaning":"在","grammar":"介词"},
+  "bad": {"pos":"adj.","meaning":"坏的","grammar":"形容词"},
+  "be": {"pos":"v.","meaning":"是","grammar":"be动词原形"},
+  "bear": {"pos":"v.","meaning":"忍受","grammar":"动词原形"},
+  "been": {"pos":"v.","meaning":"去过/been","grammar":"be的过去分词"},
+  "being": {"pos":"v.","meaning":"正在是","grammar":"be的现在分词"},
+  "bit": {"pos": "n.", "meaning": "一点", "grammar": "名词，可在句中作主语或宾语。"},
+  "brian": {"pos": "n.", "meaning": "布赖恩（人名）", "grammar": "专有名词：首字母大写，前面不加冠词。"},
+  "but": {"pos":"conj.","meaning":"但是","grammar":"转折连词"},
+  "calm": {"pos": "adj./v.", "meaning": "平静的；使平静", "grammar": "形容词，修饰名词或作表语。"},
+  "caught": {"pos": "v.", "meaning": "抓住了", "grammar": "catch的过去式"},
+  "cigarette": {"pos": "n.", "meaning": "香烟", "grammar": "名词，可在句中作主语或宾语。"},
+  "cigarettes": {"pos": "n.", "meaning": "香烟", "grammar": "名词复数形式。"},
+  "cigars": {"pos": "n.", "meaning": "雪茄（cigar 复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "compete": {"pos": "v.", "meaning": "竞争；比赛", "grammar": "动词，在句中作谓语。"},
+  "competition": {"pos":"n.","meaning":"比赛","grammar":"名词"},
+  "competitor": {"pos": "n.", "meaning": "competit的的人", "grammar": "名词后缀，表执行者"},
+  "concentration": {"pos": "n.", "meaning": "concentra的的行为/状态", "grammar": "名词后缀"},
+  "could": {"pos":"aux.","meaning":"能（过去式）","grammar":"can的过去式"},
+  "courage": {"pos": "n.", "meaning": "勇气", "grammar": "名词，可在句中作主语或宾语。"},
+  "days": {"pos": "n.", "meaning": "day（复数）", "grammar": "名词复数"},
+  "delighted": {"pos": "adj.", "meaning": "delight的被的", "grammar": "形容词/过去分词"},
+  "deserves": {"pos": "n.", "meaning": "deserve（复数）", "grammar": "名词复数"},
+  "did": {"pos":"aux.","meaning":"做（过去式）","grammar":"助动词过去式，构成否定/疑问"},
+  "do": {"pos":"v.","meaning":"做","grammar":"助动词/实义动词"},
+  "does": {"pos":"v.","meaning":"做（三单）","grammar":"do的第三人称单数"},
+  "done": {"pos": "v.", "meaning": "做了", "grammar": "do的过去分词"},
+  "during": {"pos":"prep.","meaning":"在…期间","grammar":"介词"},
+  "easiest": {"pos": "adj.", "meaning": "最容易的（easy 最高级）", "grammar": "形容词，修饰名词或作表语。"},
+  "effort": {"pos": "n.", "meaning": "努力", "grammar": "名词，可在句中作主语或宾语。"},
+  "else": {"pos": "adj.", "meaning": "其他的", "grammar": "形容词，修饰名词或作表语。"},
+  "enormous": {"pos": "adj.", "meaning": "enorm的有性质的", "grammar": "形容词后缀"},
+  "entitled": {"pos": "adj.", "meaning": "entitl的被的", "grammar": "形容词/过去分词"},
+  "eventually": {"pos": "adv.", "meaning": "最终", "grammar": "时间副词"},
+  "ever": {"pos": "adv.", "meaning": "曾经", "grammar": "时间副词"},
+  "every": {"pos":"adj.","meaning":"每个","grammar":"形容词"},
+  "everybody": {"pos": "pron.", "meaning": "每个人", "grammar": "不定代词"},
+  "everyone": {"pos":"pron.","meaning":"每个人","grammar":"不定代词"},
+  "experience": {"pos":"n.","meaning":"经历","grammar":"名词"},
+  "extremely": {"pos": "adv.", "meaning": "极其", "grammar": "程度副词"},
+  "feels": {"pos": "v.", "meaning": "感觉（三单）", "grammar": "feel的三单"},
+  "felt": {"pos":"v.","meaning":"感觉了","grammar":"feel的过去式"},
+  "finishing": {"pos": "v.", "meaning": "完成", "grammar": "finish的现在分词"},
+  "for": {"pos":"prep.","meaning":"为了","grammar":"介词"},
+  "friend": {"pos":"n.","meaning":"朋友","grammar":"名词"},
+  "friends": {"pos":"n.","meaning":"朋友","grammar":"名词复数"},
+  "from": {"pos":"prep.","meaning":"从","grammar":"介词"},
+  "give": {"pos":"v.","meaning":"给","grammar":"动词原形"},
+  "giving": {"pos": "v.", "meaning": "给", "grammar": "give的现在分词"},
+  "guiltily": {"pos": "adv.", "meaning": "guilti的地", "grammar": "副词后缀"},
+  "had": {"pos":"v.","meaning":"有（过去式）","grammar":"have的过去式"},
+  "has": {"pos":"v.","meaning":"有（三单）","grammar":"have的第三人称单数"},
+  "have": {"pos":"v.","meaning":"有","grammar":"动词，have/has有"},
+  "he": {"pos":"pron.","meaning":"他","grammar":"代词主格，作主语"},
+  "health": {"pos": "n.", "meaning": "健康", "grammar": "名词，可在句中作主语或宾语。"},
+  "hear": {"pos":"v.","meaning":"听到","grammar":"动词原形"},
+  "hide": {"pos":"v.","meaning":"躲藏","grammar":"动词原形"},
+  "himself": {"pos": "pron.", "meaning": "他自己", "grammar": "反身代词"},
+  "i": {"pos":"pron.","meaning":"我","grammar":"代词主格，作主语"},
+  "in": {"pos":"prep.","meaning":"在…里","grammar":"介词"},
+  "is": {"pos":"v.","meaning":"是","grammar":"be动词，第三人称单数"},
+  "isn't": {"pos":"v.","meaning":"不是","grammar":"is not缩写"},
+  "it": {"pos":"pron.","meaning":"它","grammar":"代词"},
+  "kept": {"pos": "v.", "meaning": "保持了", "grammar": "keep的过去式"},
+  "knew": {"pos":"v.","meaning":"知道了","grammar":"know的过去式"},
+  "know": {"pos":"v.","meaning":"知道","grammar":"动词原形"},
+  "last": {"pos":"adj.","meaning":"最后的","grammar":"形容词"},
+  "like": {"pos":"prep.","meaning":"像","grammar":"介词"},
+  "lit": {"pos": "n.", "meaning": "光", "grammar": "动词过去式/过去分词。"},
+  "lonely": {"pos":"adj.","meaning":"孤独的","grammar":"形容词"},
+  "loop": {"pos": "n.", "meaning": "圈；环；（过山车）环形轨道", "grammar": "名词，可在句中作主语或宾语。"},
+  "lots": {"pos": "n.", "meaning": "许多", "grammar": "名词复数形式。"},
+  "made": {"pos":"v.","meaning":"做了","grammar":"make的过去式"},
+  "matters": {"pos": "v.", "meaning": "重要（三单）", "grammar": "matter的三单"},
+  "me": {"pos":"pron.","meaning":"我","grammar":"代词宾格"},
+  "mean": {"pos":"v.","meaning":"意思是","grammar":"动词原形"},
+  "means": {"pos": "v.", "meaning": "意思是（三单）", "grammar": "mean的三单"},
+  "more": {"pos": "adj.", "meaning": "许多", "grammar": "比较级形式。 形容词，修饰不可数名词"},
+  "my": {"pos":"pron.","meaning":"我的","grammar":"形容词性物主代词"},
+  "nerves": {"pos": "n.", "meaning": "神经", "grammar": "名词复数形式。"},
+  "news": {"pos": "n.", "meaning": "新闻", "grammar": "名词，可在句中作主语或宾语。"},
+  "no": {"pos":"adv.","meaning":"不","grammar":"否定回答"},
+  "normal": {"pos": "adj.", "meaning": "norm的与有关的", "grammar": "形容词后缀"},
+  "not": {"pos":"adv.","meaning":"不","grammar":"否定副词"},
+  "of": {"pos":"prep.","meaning":"…的","grammar":"介词"},
+  "offering": {"pos": "v.", "meaning": "提供", "grammar": "offer的现在分词"},
+  "old": {"pos":"adj.","meaning":"旧的","grammar":"形容词"},
+  "on": {"pos":"prep.","meaning":"在…上","grammar":"介词"},
+  "once": {"pos": "adv.", "meaning": "一次/曾经", "grammar": "频率副词"},
+  "one": {"pos": "num.", "meaning": "一；一个", "grammar": "数词，表示数量或顺序。"},
+  "out": {"pos":"adv.","meaning":"出去","grammar":"副词"},
+  "packet": {"pos": "n.", "meaning": "小包；一包", "grammar": "名词，可在句中作主语或宾语。"},
+  "participated": {"pos": "v.", "meaning": "参与了", "grammar": "participate的过去式"},
+  "party": {"pos": "n.", "meaning": "聚会", "grammar": "名词，可在句中作主语或宾语。"},
+  "persevered": {"pos": "adj.", "meaning": "persever的被的", "grammar": "形容词/过去分词"},
+  "pleasure": {"pos": "n.", "meaning": "快乐", "grammar": "名词，可在句中作主语或宾语。"},
+  "pocket": {"pos":"n.","meaning":"口袋","grammar":"名词"},
+  "pointed": {"pos": "v.", "meaning": "指向了", "grammar": "point的过去式"},
+  "position": {"pos": "n.", "meaning": "posi的的行为/状态", "grammar": "名词后缀"},
+  "produced": {"pos": "v.", "meaning": "生产了", "grammar": "produce的过去式"},
+  "race": {"pos":"n.","meaning":"比赛","grammar":"名词"},
+  "reading": {"pos": "v.", "meaning": "读", "grammar": "read的现在分词"},
+  "respect": {"pos": "v.", "meaning": "尊敬", "grammar": "动词，在句中作谓语。"},
+  "returned": {"pos": "v.", "meaning": "返回了", "grammar": "return的过去式"},
+  "satisfaction": {"pos": "n.", "meaning": "satisfac的的行为/状态", "grammar": "名词后缀"},
+  "seven": {"pos": "n.", "meaning": "七", "grammar": "名词，可在句中作主语或宾语。"},
+  "smoke": {"pos": "n.", "meaning": "烟", "grammar": "名词，可在句中作主语或宾语。"},
+  "smoked": {"pos": "adj.", "meaning": "smok的被的", "grammar": "形容词/过去分词"},
+  "smoking": {"pos": "n.", "meaning": "smok的的行为", "grammar": "名词/动名词"},
+  "some": {"pos":"adj.","meaning":"一些","grammar":"形容词"},
+  "someone": {"pos":"pron.","meaning":"某人","grammar":"不定代词"},
+  "something": {"pos":"pron.","meaning":"某事","grammar":"不定代词"},
+  "sometimes": {"pos":"adv.","meaning":"有时","grammar":"频率副词"},
+  "still": {"pos":"adv.","meaning":"仍然","grammar":"副词"},
+  "suffered": {"pos": "v.", "meaning": "遭受了", "grammar": "suffer的过去式"},
+  "sure": {"pos":"adj.","meaning":"确定的","grammar":"形容词"},
+  "sweets": {"pos": "adj.", "meaning": "甜的", "grammar": "名词复数形式。"},
+  "symptoms": {"pos": "n.", "meaning": "症状（复数）", "grammar": "名词，可在句中作主语或宾语。"},
+  "takes": {"pos": "n.", "meaning": "拿（复数）", "grammar": "名词复数"},
+  "temper": {"pos": "n.", "meaning": "temp的的人/物", "grammar": "名词后缀，表执行者"},
+  "terribly": {"pos": "adv.", "meaning": "terrib的地", "grammar": "副词后缀"},
+  "than": {"pos": "n.", "meaning": "比", "grammar": "名词，可在句中作主语或宾语。"},
+  "that": {"pos":"pron.","meaning":"那","grammar":"指示代词/连词"},
+  "the": {"pos":"art.","meaning":"这，那","grammar":"定冠词，特指"},
+  "their": {"pos":"pron.","meaning":"他们的","grammar":"形容词性物主代词"},
+  "they": {"pos":"pron.","meaning":"他们","grammar":"代词主格"},
+  "thing": {"pos": "n.", "meaning": "东西", "grammar": "名词，可在句中作主语或宾语。"},
+  "things": {"pos": "n.", "meaning": "东西", "grammar": "名词，可在句中作主语或宾语。"},
+  "this": {"pos":"pron.","meaning":"这","grammar":"指示代词"},
+  "time": {"pos":"n.","meaning":"时间","grammar":"名词"},
+  "times": {"pos": "n.", "meaning": "time（复数）", "grammar": "名词复数"},
+  "to": {"pos":"prep.","meaning":"到","grammar":"介词"},
+  "took": {"pos":"v.","meaning":"拿（过去式）","grammar":"take的过去式"},
+  "uncomfortable": {"pos": "adj.", "meaning": "uncomfort的能够的", "grammar": "形容词后缀"},
+  "up": {"pos":"prep.","meaning":"沿着","grammar":"介词"},
+  "urged": {"pos": "v.", "meaning": "催促了", "grammar": "urge的过去式"},
+  "usual": {"pos": "adj.", "meaning": "usu的与有关的", "grammar": "形容词后缀"},
+  "was": {"pos":"v.","meaning":"是（过去式）","grammar":"be动词过去式"},
+  "week": {"pos":"n.","meaning":"周","grammar":"名词"},
+  "went": {"pos":"v.","meaning":"去（过去式）","grammar":"go的过去式"},
+  "what": {"pos":"pron.","meaning":"什么","grammar":"疑问代词"},
+  "when": {"pos":"conj.","meaning":"当…时","grammar":"时间连词"},
+  "whenever": {"pos": "conj.", "meaning": "无论何时", "grammar": "连词"},
+  "whole": {"pos":"adj.","meaning":"整个的","grammar":"形容词"},
+  "wife": {"pos":"n.","meaning":"妻子","grammar":"名词"},
+  "with": {"pos":"prep.","meaning":"和…一起","grammar":"介词"},
+  "world": {"pos":"n.","meaning":"世界","grammar":"名词"},
+  "would": {"pos":"aux.","meaning":"将会","grammar":"will的过去式/虚拟语气"},
+  "yes": {"pos":"int.","meaning":"是的","grammar":"肯定回答"},
+  "you": {"pos":"pron.","meaning":"你，你们","grammar":"代词"},
+  "you've": {"pos": "pron.", "meaning": "你已经", "grammar": "you have缩写"},
+  "your": {"pos":"pron.","meaning":"你的","grammar":"形容词性物主代词"},
+};
+
+const hlWords = new Set([]);
+
+const tooltip = document.getElementById("tooltip");
+const nceRoot = document.getElementById("nceRoot");
+const voiceSelect = document.getElementById("voiceSelect");
+const testBtn = document.getElementById("testVoice");
+
+let voices = [];
+let selectedVoice = null;
+
+function loadVoices() {
+  voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return;
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+  voiceSelect.innerHTML = '';
+  const groups = { 'US': [], 'UK': [], 'Other': [] };
+  enVoices.forEach(v => {
+    const name = v.name.toLowerCase();
+    if (name.includes('us') || name.includes('american') || v.lang === 'en-US') groups['US'].push(v);
+    else if (name.includes('uk') || name.includes('british') || v.lang === 'en-GB') groups['UK'].push(v);
+    else groups['Other'].push(v);
+  });
+  const preferUS = ['Samantha', 'Alex', 'Tom'];
+  const preferUK = ['Daniel', 'Kate', 'Serena'];
+  function sortVoices(list, pref) {
+    return list.sort((a, b) => {
+      const ai = pref.findIndex(p => a.name.includes(p));
+      const bi = pref.findIndex(p => b.name.includes(p));
+      if (ai !== -1 && bi === -1) return -1;
+      if (ai === -1 && bi !== -1) return 1;
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      return a.name.localeCompare(b.name);
+    });
+  }
+  groups['US'] = sortVoices(groups['US'], preferUS);
+  groups['UK'] = sortVoices(groups['UK'], preferUK);
+  if (groups['US'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇺🇸 美式发音';
+    groups['US'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      if (i === 0 && !selectedVoice) { selectedVoice = v; opt.selected = true; }
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['UK'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇬🇧 英式发音';
+    groups['UK'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['Other'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '其他';
+    groups['Other'].forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+}
+
+loadVoices();
+if (typeof speechSynthesis !== 'undefined') speechSynthesis.onvoiceschanged = loadVoices;
+
+voiceSelect.addEventListener('change', () => { selectedVoice = voices[parseInt(voiceSelect.value)]; });
+testBtn.addEventListener('click', () => {
+  if (!selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance('Hello, this is a test.');
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  window.speechSynthesis.speak(u);
+});
+
+function wrapSentences(el) {
+  const data = el.getAttribute("data-sentences");
+  if (!data) return;
+  const sentences = data.split("|");
+  let html = "";
+  sentences.forEach(s => {
+    const tokens = s.match(/[\w']+|[^\w']+/g) || [];
+    for (const tok of tokens) {
+      if (/^[\w']+$/.test(tok)) {
+        const lower = tok.toLowerCase();
+        const isHl = hlWords.has(lower);
+        html += `<span class="w${isHl ? ' hl' : ''}" data-word="${lower}" data-sentence="${encodeURIComponent(s)}">${tok}</span>`;
+      } else html += tok;
+    }
+  });
+  el.innerHTML = html;
+}
+
+document.querySelectorAll("[data-sentences]").forEach(wrapSentences);
+
+function speak(word, el) {
+  if (!('speechSynthesis' in window) || !selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  el.classList.add("speaking");
+  u.onend = () => el.classList.remove("speaking");
+  u.onerror = () => el.classList.remove("speaking");
+  window.speechSynthesis.speak(u);
+}
+
+function showTip(el, word) {
+  const info = dict[word];
+  const rect = el.getBoundingClientRect();
+  let grammarText = info && info.grammar ? info.grammar : "暂无语法解释";
+  if (info) {
+    tooltip.innerHTML = `<span class="tw">${word}</span><span class="tp">${info.pos}</span><div class="tm">${info.meaning}</div><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  } else {
+    tooltip.innerHTML = `<span class="tw">${word}</span><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  }
+  let left = rect.left + rect.width / 2;
+  let top = rect.bottom + 6;
+  tooltip.style.left = left + "px";
+  tooltip.style.top = top + "px";
+  tooltip.style.transform = "translateX(-50%)";
+  tooltip.classList.add("show");
+  requestAnimationFrame(() => {
+    const tr = tooltip.getBoundingClientRect();
+    if (tr.left < 8) tooltip.style.left = (left + (8 - tr.left)) + "px";
+    else if (tr.right > window.innerWidth - 8) tooltip.style.left = (left - (tr.right - window.innerWidth + 8)) + "px";
+    if (tr.bottom > window.innerHeight - 8) tooltip.style.top = (rect.top - tr.height - 6) + "px";
+  });
+}
+
+let activeWord = null;
+nceRoot.addEventListener("click", (e) => {
+  const spkBtn = e.target.closest(".spk");
+  if (spkBtn) {
+    e.stopPropagation();
+    const word = spkBtn.dataset.word;
+    const isUK = spkBtn.dataset.accent === "uk";
+    let voice = selectedVoice;
+    if (voices.length > 0) {
+      const targetLang = isUK ? 'en-GB' : 'en-US';
+      const found = voices.find(v => v.lang === targetLang);
+      if (found) voice = found;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(word);
+    u.voice = voice; u.lang = voice.lang;
+    u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+    spkBtn.classList.add("playing");
+    u.onend = () => spkBtn.classList.remove("playing");
+    u.onerror = () => spkBtn.classList.remove("playing");
+    window.speechSynthesis.speak(u);
+    return;
+  }
+  const el = e.target.closest(".w");
+  if (!el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  const word = el.dataset.word;
+  if (activeWord === el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  activeWord = el;
+  showTip(el, word);
+  speak(word, el);
+});
+document.addEventListener("click", (e) => {
+  if (!nceRoot.contains(e.target)) { tooltip.classList.remove("show"); activeWord = null; }
+});
+</script>
