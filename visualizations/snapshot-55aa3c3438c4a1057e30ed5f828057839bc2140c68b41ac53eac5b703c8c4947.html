@@ -1,0 +1,481 @@
+<style>
+  .nce-wrap { font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif; background: #faf8f5; color: #333; line-height: 1.8; padding: 32px 16px; max-width: 720px; margin: 0 auto; position: relative; }
+  .nce-wrap h1 { font-size: 22px; font-weight: 700; color: #2c2c2c; margin-bottom: 4px; }
+  .nce-wrap .sub { font-size: 13px; color: #999; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid #e8e2da; }
+  .nce-wrap .stitle { font-size: 15px; font-weight: 600; color: #6b5c4d; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .nce-wrap .passage, .nce-wrap .dc { background: #fff; border-radius: 10px; padding: 22px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 24px; font-size: 17px; line-height: 2.1; }
+  .nce-wrap .w { cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background 0.15s, color 0.15s; position: relative; }
+  .nce-wrap .w:hover { background: #f0e8dc; }
+  .nce-wrap .w.hl { color: #8B5E3C; font-weight: 700; }
+  .nce-wrap .w.hl:hover { background: #f0e4d4; }
+  .nce-wrap .w.speaking { background: #e8dfd2; }
+  .nce-wrap .tip { position: fixed; background: #fff; border: 1px solid #e0d6c8; border-radius: 8px; padding: 12px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; font-size: 14px; line-height: 1.6; pointer-events: none; opacity: 0; transition: opacity 0.2s; max-width: 300px; }
+  .nce-wrap .tip.show { opacity: 1; pointer-events: auto; }
+  .nce-wrap .tip .tw { font-weight: 700; color: #8B5E3C; font-size: 15px; }
+  .nce-wrap .tip .tp { color: #999; font-size: 12px; margin-left: 6px; }
+  .nce-wrap .tip .tm { color: #555; margin-top: 4px; }
+  .nce-wrap .tip .tg { color: #6b5c4d; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0d6c8; font-size: 13px; line-height: 1.5; }
+  .nce-wrap .tip .spk-row { margin-top: 8px; display: flex; gap: 8px; }
+  .nce-wrap .tip .spk { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #b8a48e; font-size: 12px; pointer-events: auto; padding: 4px 10px; border-radius: 12px; border: 1px solid #e0d6c8; transition: all 0.15s; background: #faf8f5; }
+  .nce-wrap .tip .spk:hover { color: #8B5E3C; border-color: #8B5E3C; background: #fff; }
+  .nce-wrap .tip .spk.playing { color: #8B5E3C; border-color: #8B5E3C; background: #f5ede2; }
+  .nce-wrap details { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 16px; overflow: hidden; }
+  .nce-wrap summary { padding: 14px 22px; font-size: 14px; font-weight: 600; color: #6b5c4d; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px; transition: background 0.2s; list-style: none; }
+  .nce-wrap summary::-webkit-details-marker { display: none; }
+  .nce-wrap summary:hover { background: #faf5ef; }
+  .nce-wrap summary::before { content: "▶"; font-size: 10px; transition: transform 0.25s ease; display: inline-block; color: #b8a48e; }
+  .nce-wrap details[open] > summary::before { transform: rotate(90deg); }
+  .nce-wrap .dc { padding: 16px 22px 20px 22px; font-size: 15px; line-height: 1.9; color: #444; border-top: 1px solid #f0ebe4; margin-bottom: 0; }
+  .nce-wrap .dc p { margin-top: 14px; }
+  .nce-wrap .qa { margin-top: 16px; }
+  .nce-wrap .qa .q { font-weight: 600; color: #5a4a3a; margin-bottom: 4px; }
+  .nce-wrap .qa .a { color: #555; padding-left: 14px; border-left: 3px solid #e8ddd0; }
+  .nce-wrap .hint { font-size: 12px; color: #b8a48e; margin-bottom: 16px; text-align: right; }
+  .nce-wrap .voice-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nce-wrap .voice-bar label { font-size: 13px; color: #6b5c4d; font-weight: 600; }
+  .nce-wrap .voice-bar select { flex: 1; padding: 6px 10px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 13px; color: #555; background: #faf8f5; cursor: pointer; outline: none; }
+  .nce-wrap .voice-bar select:focus { border-color: #8B5E3C; }
+  .nce-wrap .voice-bar .test-btn { padding: 6px 12px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 12px; color: #6b5c4d; background: #faf8f5; cursor: pointer; transition: all 0.15s; }
+  .nce-wrap .voice-bar .test-btn:hover { border-color: #8B5E3C; color: #8B5E3C; }
+</style>
+
+<div class="nce-wrap" id="nceRoot">
+  <h1>Lesson 1 — A Private Conversation</h1>
+  <p class="sub">新概念英语 第二册</p>
+
+  <div class="voice-bar">
+    <label>发音：</label>
+    <select id="voiceSelect"></select>
+    <button class="test-btn" id="testVoice">试听</button>
+  </div>
+
+  <p class="stitle">课文原文</p>
+  <p class="hint">点击任意单词查看释义、语法和发音</p>
+  <div class="passage" data-sentences="Last week I went to the theatre.|I had a very good seat.|The play was very interesting.|I did not enjoy it.|A young man and a young woman were sitting behind me.|They were talking very loudly.|I could not hear a word.|I got very angry.|I could not hear the actors.|I turned round.|I looked at the man and the woman angrily.|They did not pay any attention.|At last, I said, &quot;I can't hear a word! You are disturbing me!&quot;|The young man said rudely, &quot;This is a private conversation!&quot;"></div>
+
+  <details>
+    <summary>简单句口语复述</summary>
+    <div class="dc" data-sentences="Last week I went to the theatre.|I had a good seat.|The play was interesting, but I didn't enjoy it.|A young man and a young woman were sitting behind me, talking loudly.|I couldn't hear the actors.|I got angry and turned round.|I told them to be quiet.|But the young man said rudely, &quot;This is a private conversation!&quot;"></div>
+  </details>
+
+  <details>
+    <summary>扩展口语问答参考</summary>
+    <div class="dc">
+      <div class="qa">
+        <p class="q" data-sentences="Have you ever been disturbed while watching a movie or a play?"></p>
+        <p class="a" data-sentences="Yes, once.|I was watching a movie in the cinema and a group of people behind me kept talking and laughing.|I felt really annoyed because I couldn't follow the story.|In the end, I asked the staff to help."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="What do you usually do when someone disturbs you in public?"></p>
+        <p class="a" data-sentences="It depends.|If it's not too bad, I just ignore it.|But if it really bothers me, I'll turn around and politely ask them to keep quiet.|I don't want to start an argument, but I also want to enjoy myself."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="Do you prefer watching a play at the theatre or watching a movie at the cinema? Why?"></p>
+        <p class="a" data-sentences="I prefer the cinema because it's more relaxing.|The theatre is nice, but you have to dress up and sit quietly for a long time.|At the cinema, I can just grab some popcorn and enjoy the show.|Besides, the tickets are usually cheaper."></p>
+      </div>
+    </div>
+  </details>
+
+  <div class="tip" id="tooltip"></div>
+</div>
+
+<script>
+const dict = {
+  "last": { pos: "adj.", meaning: "最后的；上一个", grammar: "形容词，修饰后面的名词 week，表示时间" },
+  "week": { pos: "n.", meaning: "周，星期", grammar: "名词，作时间状语，last week 整体作时间状语" },
+  "went": { pos: "v.", meaning: "去（go 的过去式）", grammar: "动词过去式，作谓语，表示过去发生的动作" },
+  "theatre": { pos: "n.", meaning: "剧院", grammar: "名词，作介词 to 的宾语，表示目的地" },
+  "had": { pos: "v.", meaning: "有（have 的过去式）", grammar: "动词过去式，作谓语，表示过去的状态" },
+  "very": { pos: "adv.", meaning: "非常", grammar: "副词，修饰形容词 good，表示程度" },
+  "good": { pos: "adj.", meaning: "好的", grammar: "形容词，作定语修饰名词 seat" },
+  "seat": { pos: "n.", meaning: "座位", grammar: "名词，作动词 had 的宾语" },
+  "play": { pos: "n.", meaning: "戏剧", grammar: "名词，作主语" },
+  "interesting": { pos: "adj.", meaning: "有趣的", grammar: "形容词，作表语，说明主语的性质" },
+  "did": { pos: "aux.", meaning: "做（do 的过去式）", grammar: "助动词，与 not 构成否定句" },
+  "not": { pos: "adv.", meaning: "不", grammar: "副词，与 did 构成否定" },
+  "enjoy": { pos: "v.", meaning: "享受，喜爱", grammar: "动词原形，作谓语，did 后接动词原形" },
+  "young": { pos: "adj.", meaning: "年轻的", grammar: "形容词，作定语修饰名词 man/woman" },
+  "man": { pos: "n.", meaning: "男人", grammar: "名词，作主语的一部分" },
+  "woman": { pos: "n.", meaning: "女人", grammar: "名词，作主语的一部分" },
+  "were": { pos: "v.", meaning: "是（be 的过去式）", grammar: "be 动词过去式，与 sitting 构成过去进行时" },
+  "sitting": { pos: "v.", meaning: "坐着（sit 的现在分词）", grammar: "现在分词，与 were 构成过去进行时 were sitting" },
+  "behind": { pos: "prep.", meaning: "在…后面", grammar: "介词，与 me 构成介词短语，作地点状语" },
+  "me": { pos: "pron.", meaning: "我（宾格）", grammar: "代词宾格，作介词 behind 的宾语" },
+  "they": { pos: "pron.", meaning: "他们", grammar: "代词主格，作主语" },
+  "talking": { pos: "v.", meaning: "谈话（talk 的现在分词）", grammar: "现在分词，与 were 构成过去进行时" },
+  "loudly": { pos: "adv.", meaning: "大声地", grammar: "副词，作方式状语，修饰 talking" },
+  "could": { pos: "aux.", meaning: "能够（can 的过去式）", grammar: "情态动词过去式，表示过去的能力" },
+  "hear": { pos: "v.", meaning: "听见", grammar: "动词原形，作谓语，could 后接动词原形" },
+  "word": { pos: "n.", meaning: "词，单词", grammar: "名词，作动词 hear 的宾语" },
+  "got": { pos: "v.", meaning: "变得（get 的过去式）", grammar: "动词过去式，作谓语，表示状态变化" },
+  "angry": { pos: "adj.", meaning: "生气的", grammar: "形容词，作表语，说明主语的状态" },
+  "actors": { pos: "n.", meaning: "演员（复数）", grammar: "名词复数，作动词 hear 的宾语" },
+  "turned": { pos: "v.", meaning: "转动（turn 的过去式）", grammar: "动词过去式，作谓语" },
+  "round": { pos: "adv.", meaning: "围绕；转圈", grammar: "副词，与 turned 构成短语动词 turn round" },
+  "looked": { pos: "v.", meaning: "看（look 的过去式）", grammar: "动词过去式，作谓语" },
+  "angrily": { pos: "adv.", meaning: "生气地", grammar: "副词，作方式状语，修饰 looked" },
+  "pay": { pos: "v.", meaning: "支付；给予", grammar: "动词原形，与 attention 构成固定搭配 pay attention" },
+  "any": { pos: "det.", meaning: "任何", grammar: "限定词，修饰名词 attention，用于否定句" },
+  "attention": { pos: "n.", meaning: "注意", grammar: "名词，作动词 pay 的宾语" },
+  "at": { pos: "prep.", meaning: "在", grammar: "介词，与 last 构成短语 at last（最后）" },
+  "said": { pos: "v.", meaning: "说（say 的过去式）", grammar: "动词过去式，作谓语" },
+  "can't": { pos: "aux.", meaning: "不能", grammar: "情态动词 can 的否定形式" },
+  "disturbing": { pos: "v.", meaning: "打扰，妨碍", grammar: "现在分词，与 are 构成现在进行时" },
+  "rudely": { pos: "adv.", meaning: "粗鲁地", grammar: "副词，作方式状语，修饰 said" },
+  "private": { pos: "adj.", meaning: "私人的", grammar: "形容词，作定语修饰 conversation" },
+  "conversation": { pos: "n.", meaning: "谈话，对话", grammar: "名词，作表语" },
+  "this": { pos: "pron.", meaning: "这", grammar: "指示代词，作主语" },
+  "is": { pos: "v.", meaning: "是", grammar: "be 动词，作谓语" },
+  "i": { pos: "pron.", meaning: "我", grammar: "代词主格，作主语" },
+  "to": { pos: "prep.", meaning: "到，向", grammar: "介词，表示方向" },
+  "the": { pos: "art.", meaning: "这，那", grammar: "定冠词，特指某个事物" },
+  "it": { pos: "pron.", meaning: "它", grammar: "代词，作宾语" },
+  "and": { pos: "conj.", meaning: "和", grammar: "并列连词，连接两个并列成分" },
+  "but": { pos: "conj.", meaning: "但是", grammar: "转折连词，连接两个转折的分句" },
+  "in": { pos: "prep.", meaning: "在…里", grammar: "介词，表示位置或时间" },
+  "of": { pos: "prep.", meaning: "…的", grammar: "介词，表示所属关系" },
+  "with": { pos: "prep.", meaning: "和…一起", grammar: "介词，表示伴随" },
+  "on": { pos: "prep.", meaning: "在…上", grammar: "介词，表示位置" },
+  "for": { pos: "prep.", meaning: "为了", grammar: "介词，表示目的" },
+  "from": { pos: "prep.", meaning: "从", grammar: "介词，表示起点" },
+  "by": { pos: "prep.", meaning: "被，通过", grammar: "介词，表示方式或被动" },
+  "about": { pos: "prep.", meaning: "关于", grammar: "介词，表示主题" },
+  "have": { pos: "v.", meaning: "有", grammar: "动词，作谓语" },
+  "you": { pos: "pron.", meaning: "你", grammar: "代词，作主语或宾语" },
+  "ever": { pos: "adv.", meaning: "曾经", grammar: "副词，用于疑问句或完成时" },
+  "been": { pos: "v.", meaning: "是（be 的过去分词）", grammar: "过去分词，与 have 构成完成时" },
+  "disturbed": { pos: "v.", meaning: "被打扰的", grammar: "过去分词，用于被动语态" },
+  "while": { pos: "conj.", meaning: "当…时候", grammar: "连词，引导时间状语从句" },
+  "watching": { pos: "v.", meaning: "观看", grammar: "现在分词，与 was 构成过去进行时" },
+  "movie": { pos: "n.", meaning: "电影", grammar: "名词，作 watching 的宾语" },
+  "or": { pos: "conj.", meaning: "或者", grammar: "选择连词，连接两个选择" },
+  "yes": { pos: "int.", meaning: "是的", grammar: "感叹词，表示肯定回答" },
+  "once": { pos: "adv.", meaning: "一次", grammar: "副词，表示频率" },
+  "was": { pos: "v.", meaning: "是（be 的过去式）", grammar: "be 动词过去式，与 watching 构成过去进行时" },
+  "cinema": { pos: "n.", meaning: "电影院", grammar: "名词，作介词 in 的宾语" },
+  "group": { pos: "n.", meaning: "群，组", grammar: "名词，作主语" },
+  "people": { pos: "n.", meaning: "人们", grammar: "名词复数，of people 修饰 group" },
+  "kept": { pos: "v.", meaning: "保持（keep 的过去式）", grammar: "动词过去式，kept doing 表示持续做某事" },
+  "laughing": { pos: "v.", meaning: "笑", grammar: "现在分词，作 kept 的宾语" },
+  "felt": { pos: "v.", meaning: "感觉（feel 的过去式）", grammar: "动词过去式，作谓语" },
+  "really": { pos: "adv.", meaning: "真正地", grammar: "副词，修饰形容词 annoyed" },
+  "annoyed": { pos: "adj.", meaning: "恼怒的", grammar: "形容词，作表语" },
+  "because": { pos: "conj.", meaning: "因为", grammar: "连词，引导原因状语从句" },
+  "couldn't": { pos: "aux.", meaning: "不能", grammar: "情态动词 can 的否定过去式" },
+  "follow": { pos: "v.", meaning: "跟随；理解", grammar: "动词原形，作谓语" },
+  "story": { pos: "n.", meaning: "故事", grammar: "名词，作 follow 的宾语" },
+  "end": { pos: "n.", meaning: "结尾", grammar: "名词，in the end 作时间状语" },
+  "asked": { pos: "v.", meaning: "问；请求", grammar: "动词过去式，作谓语" },
+  "staff": { pos: "n.", meaning: "员工", grammar: "名词，作 asked 的宾语" },
+  "help": { pos: "v.", meaning: "帮助", grammar: "动词原形，作宾语补足语" },
+  "what": { pos: "pron.", meaning: "什么", grammar: "疑问代词，引导特殊疑问句" },
+  "do": { pos: "v.", meaning: "做", grammar: "助动词，用于构成疑问句" },
+  "usually": { pos: "adv.", meaning: "通常", grammar: "副词，作频率状语" },
+  "someone": { pos: "pron.", meaning: "某人", grammar: "不定代词，作主语" },
+  "disturbs": { pos: "v.", meaning: "打扰", grammar: "动词第三人称单数，作谓语" },
+  "public": { pos: "n.", meaning: "公众场合", grammar: "名词，in public 作地点状语" },
+  "depends": { pos: "v.", meaning: "取决于", grammar: "动词第三人称单数，作谓语" },
+  "if": { pos: "conj.", meaning: "如果", grammar: "连词，引导条件状语从句" },
+  "too": { pos: "adv.", meaning: "太；也", grammar: "副词，修饰形容词 bad" },
+  "bad": { pos: "adj.", meaning: "坏的", grammar: "形容词，作表语" },
+  "just": { pos: "adv.", meaning: "只是", grammar: "副词，修饰动词 ignore" },
+  "ignore": { pos: "v.", meaning: "忽视", grammar: "动词原形，作谓语" },
+  "bothers": { pos: "v.", meaning: "打扰", grammar: "动词第三人称单数，作谓语" },
+  "i'll": { pos: "pron.+aux.", meaning: "我将", grammar: "I will 的缩写，表示将来" },
+  "around": { pos: "adv.", meaning: "周围", grammar: "副词，与 turn 构成短语" },
+  "politely": { pos: "adv.", meaning: "礼貌地", grammar: "副词，作方式状语" },
+  "them": { pos: "pron.", meaning: "他们（宾格）", grammar: "代词宾格，作 ask 的宾语" },
+  "keep": { pos: "v.", meaning: "保持", grammar: "动词原形，keep quiet 表示保持安静" },
+  "quiet": { pos: "adj.", meaning: "安静的", grammar: "形容词，作 keep 的表语" },
+  "don't": { pos: "aux.", meaning: "不要", grammar: "do not 的缩写，构成否定" },
+  "want": { pos: "v.", meaning: "想要", grammar: "动词原形，作谓语" },
+  "start": { pos: "v.", meaning: "开始", grammar: "动词原形，作 want 的宾语" },
+  "argument": { pos: "n.", meaning: "争论", grammar: "名词，作 start 的宾语" },
+  "also": { pos: "adv.", meaning: "也", grammar: "副词，表示并列" },
+  "myself": { pos: "pron.", meaning: "我自己", grammar: "反身代词，强调主语" },
+  "prefer": { pos: "v.", meaning: "更喜欢", grammar: "动词原形，作谓语" },
+  "why": { pos: "adv.", meaning: "为什么", grammar: "疑问副词，引导特殊疑问句" },
+  "more": { pos: "adv.", meaning: "更多", grammar: "副词，构成比较级 more relaxing" },
+  "relaxing": { pos: "adj.", meaning: "放松的", grammar: "形容词，作表语" },
+  "nice": { pos: "adj.", meaning: "好的", grammar: "形容词，作表语" },
+  "dress": { pos: "v.", meaning: "穿衣", grammar: "动词原形，dress up 表示打扮" },
+  "up": { pos: "adv.", meaning: "向上", grammar: "副词，与 dress 构成短语" },
+  "sit": { pos: "v.", meaning: "坐", grammar: "动词原形，作谓语" },
+  "quietly": { pos: "adv.", meaning: "安静地", grammar: "副词，作方式状语" },
+  "long": { pos: "adj.", meaning: "长的", grammar: "形容词，修饰 time" },
+  "time": { pos: "n.", meaning: "时间", grammar: "名词，for a long time 作时间状语" },
+  "grab": { pos: "v.", meaning: "抓取", grammar: "动词原形，作谓语" },
+  "some": { pos: "det.", meaning: "一些", grammar: "限定词，修饰 popcorn" },
+  "popcorn": { pos: "n.", meaning: "爆米花", grammar: "名词，作 grab 的宾语" },
+  "show": { pos: "n.", meaning: "演出；节目", grammar: "名词，作 enjoy 的宾语" },
+  "besides": { pos: "adv.", meaning: "此外", grammar: "副词，作连接词" },
+  "tickets": { pos: "n.", meaning: "票（复数）", grammar: "名词复数，作主语" },
+  "are": { pos: "v.", meaning: "是", grammar: "be 动词，作谓语" },
+  "cheaper": { pos: "adj.", meaning: "更便宜的", grammar: "形容词比较级，作表语" },
+  "told": { pos: "v.", meaning: "告诉（tell 的过去式）", grammar: "动词过去式，作谓语" },
+  "be": { pos: "v.", meaning: "是", grammar: "动词原形，作宾语补足语" },
+  "a": { pos: "art.", meaning: "一个", grammar: "不定冠词，用于单数可数名词前" },
+  "my": { pos: "pron.", meaning: "我的", grammar: "形容词性物主代词" },
+  "your": { pos: "pron.", meaning: "你的", grammar: "形容词性物主代词" },
+  "his": { pos: "pron.", meaning: "他的", grammar: "形容词性物主代词" },
+  "her": { pos: "pron.", meaning: "她的", grammar: "形容词性物主代词" },
+  "our": { pos: "pron.", meaning: "我们的", grammar: "形容词性物主代词" },
+  "their": { pos: "pron.", meaning: "他们的", grammar: "形容词性物主代词" },
+  "we": { pos: "pron.", meaning: "我们", grammar: "代词主格" },
+  "he": { pos: "pron.", meaning: "他", grammar: "代词主格" },
+  "she": { pos: "pron.", meaning: "她", grammar: "代词主格" },
+  "him": { pos: "pron.", meaning: "他（宾格）", grammar: "代词宾格" },
+  "us": { pos: "pron.", meaning: "我们（宾格）", grammar: "代词宾格" }
+};
+
+const hlWords = new Set(["theatre", "seat", "interesting", "sitting", "loudly", "turned", "round", "angrily", "pay", "any", "attention", "disturbing", "conversation"]);
+
+const tooltip = document.getElementById("tooltip");
+const nceRoot = document.getElementById("nceRoot");
+const voiceSelect = document.getElementById("voiceSelect");
+const testBtn = document.getElementById("testVoice");
+
+let voices = [];
+let selectedVoice = null;
+
+function loadVoices() {
+  voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return;
+  
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+  
+  voiceSelect.innerHTML = '';
+  
+  const groups = { 'US': [], 'UK': [], 'Other': [] };
+  enVoices.forEach(v => {
+    const name = v.name.toLowerCase();
+    if (name.includes('us') || name.includes('american') || v.lang === 'en-US') {
+      groups['US'].push(v);
+    } else if (name.includes('uk') || name.includes('british') || v.lang === 'en-GB') {
+      groups['UK'].push(v);
+    } else {
+      groups['Other'].push(v);
+    }
+  });
+  
+  const preferUS = ['Samantha', 'Alex', 'Tom', 'Karen', 'Moira'];
+  const preferUK = ['Daniel', 'Kate', 'Serena', 'Oliver', 'Fiona'];
+  
+  function sortVoices(voiceList, preferred) {
+    return voiceList.sort((a, b) => {
+      const aIdx = preferred.findIndex(p => a.name.includes(p));
+      const bIdx = preferred.findIndex(p => b.name.includes(p));
+      if (aIdx !== -1 && bIdx === -1) return -1;
+      if (aIdx === -1 && bIdx !== -1) return 1;
+      if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+      return a.name.localeCompare(b.name);
+    });
+  }
+  
+  groups['US'] = sortVoices(groups['US'], preferUS);
+  groups['UK'] = sortVoices(groups['UK'], preferUK);
+  
+  if (groups['US'].length > 0) {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = '🇺🇸 美式发音';
+    groups['US'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      if (i === 0 && !selectedVoice) {
+        selectedVoice = v;
+        opt.selected = true;
+      }
+      optgroup.appendChild(opt);
+    });
+    voiceSelect.appendChild(optgroup);
+  }
+  
+  if (groups['UK'].length > 0) {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = '🇬🇧 英式发音';
+    groups['UK'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      optgroup.appendChild(opt);
+    });
+    voiceSelect.appendChild(optgroup);
+  }
+  
+  if (groups['Other'].length > 0) {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = '其他';
+    groups['Other'].forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      optgroup.appendChild(opt);
+    });
+    voiceSelect.appendChild(optgroup);
+  }
+}
+
+loadVoices();
+if (typeof speechSynthesis !== 'undefined') {
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+voiceSelect.addEventListener('change', () => {
+  const idx = parseInt(voiceSelect.value);
+  selectedVoice = voices[idx];
+});
+
+testBtn.addEventListener('click', () => {
+  if (!selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance('Hello, this is a test.');
+  utter.voice = selectedVoice;
+  utter.lang = selectedVoice.lang;
+  utter.rate = 1.0;
+  utter.pitch = 1.0;
+  utter.volume = 1.0;
+  window.speechSynthesis.speak(utter);
+});
+
+function wrapSentences(el) {
+  const data = el.getAttribute("data-sentences");
+  if (!data) return;
+  
+  const sentences = data.split("|");
+  let html = "";
+  
+  sentences.forEach(sentence => {
+    const tokens = sentence.match(/[\w']+|[^\w']+/g) || [];
+    for (const tok of tokens) {
+      if (/^[\w']+$/.test(tok)) {
+        const lower = tok.toLowerCase();
+        const isHl = hlWords.has(lower);
+        html += `<span class="w${isHl ? ' hl' : ''}" data-word="${lower}" data-sentence="${encodeURIComponent(sentence)}">${tok}</span>`;
+      } else {
+        html += tok;
+      }
+    }
+  });
+  
+  el.innerHTML = html;
+}
+
+document.querySelectorAll("[data-sentences]").forEach(wrapSentences);
+
+function speak(word, el) {
+  if (!('speechSynthesis' in window) || !selectedVoice) return;
+  
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.voice = selectedVoice;
+  utterance.lang = selectedVoice.lang;
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+  utterance.volume = 1.0;
+  
+  el.classList.add("speaking");
+  utterance.onend = () => el.classList.remove("speaking");
+  utterance.onerror = () => el.classList.remove("speaking");
+  
+  window.speechSynthesis.speak(utterance);
+}
+
+function showTip(el, word) {
+  const info = dict[word];
+  const rect = el.getBoundingClientRect();
+  const sentence = decodeURIComponent(el.dataset.sentence || "");
+  
+  let grammarText = "";
+  if (info && info.grammar) {
+    grammarText = info.grammar;
+  } else {
+    grammarText = "暂无语法解释";
+  }
+  
+  if (info) {
+    tooltip.innerHTML = `<span class="tw">${word}</span><span class="tp">${info.pos}</span><div class="tm">${info.meaning}</div><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  } else {
+    tooltip.innerHTML = `<span class="tw">${word}</span><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  }
+  
+  let left = rect.left + rect.width / 2;
+  let top = rect.bottom + 6;
+  
+  tooltip.style.left = left + "px";
+  tooltip.style.top = top + "px";
+  tooltip.style.transform = "translateX(-50%)";
+  tooltip.classList.add("show");
+  
+  requestAnimationFrame(() => {
+    const tipRect = tooltip.getBoundingClientRect();
+    if (tipRect.left < 8) {
+      tooltip.style.left = (left + (8 - tipRect.left)) + "px";
+    } else if (tipRect.right > window.innerWidth - 8) {
+      tooltip.style.left = (left - (tipRect.right - window.innerWidth + 8)) + "px";
+    }
+    if (tipRect.bottom > window.innerHeight - 8) {
+      tooltip.style.top = (rect.top - tipRect.height - 6) + "px";
+    }
+  });
+}
+
+let activeWord = null;
+
+nceRoot.addEventListener("click", (e) => {
+  const spkBtn = e.target.closest(".spk");
+  if (spkBtn) {
+    e.stopPropagation();
+    const word = spkBtn.dataset.word;
+    const isUK = spkBtn.dataset.accent === "uk";
+    
+    let voice = selectedVoice;
+    if (voices.length > 0) {
+      const targetLang = isUK ? 'en-GB' : 'en-US';
+      const found = voices.find(v => v.lang === targetLang);
+      if (found) voice = found;
+    }
+    
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.voice = voice;
+    utter.lang = voice.lang;
+    utter.rate = 1.0;
+    utter.pitch = 1.0;
+    utter.volume = 1.0;
+    
+    spkBtn.classList.add("playing");
+    utter.onend = () => spkBtn.classList.remove("playing");
+    utter.onerror = () => spkBtn.classList.remove("playing");
+    
+    window.speechSynthesis.speak(utter);
+    return;
+  }
+  
+  const el = e.target.closest(".w");
+  if (!el) {
+    tooltip.classList.remove("show");
+    activeWord = null;
+    return;
+  }
+  
+  const word = el.dataset.word;
+  
+  if (activeWord === el) {
+    tooltip.classList.remove("show");
+    activeWord = null;
+    return;
+  }
+  
+  activeWord = el;
+  showTip(el, word);
+  speak(word, el);
+});
+
+document.addEventListener("click", (e) => {
+  if (!nceRoot.contains(e.target)) {
+    tooltip.classList.remove("show");
+    activeWord = null;
+  }
+});
+</script>

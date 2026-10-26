@@ -1,0 +1,212 @@
+<style>
+  .nce-wrap { font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif; background: #faf8f5; color: #333; line-height: 1.8; padding: 32px 16px; max-width: 720px; margin: 0 auto; position: relative; }
+  .nce-wrap h1 { font-size: 22px; font-weight: 700; color: #2c2c2c; margin-bottom: 4px; }
+  .nce-wrap .sub { font-size: 13px; color: #999; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid #e8e2da; }
+  .nce-wrap .stitle { font-size: 15px; font-weight: 600; color: #6b5c4d; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .nce-wrap .passage { background: #fff; border-radius: 10px; padding: 22px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 24px; font-size: 17px; line-height: 2.1; }
+  .nce-wrap .w { cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background 0.15s, color 0.15s; }
+  .nce-wrap .w:hover { background: #f0e8dc; }
+  .nce-wrap .w.hl { color: #8B5E3C; font-weight: 700; }
+  .nce-wrap .w.hl:hover { background: #f0e4d4; }
+  .nce-wrap .tip { position: absolute; background: #fff; border: 1px solid #e0d6c8; border-radius: 8px; padding: 10px 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; font-size: 14px; line-height: 1.6; pointer-events: none; opacity: 0; transition: opacity 0.2s; max-width: 220px; }
+  .nce-wrap .tip.show { opacity: 1; pointer-events: auto; }
+  .nce-wrap .tip .tw { font-weight: 700; color: #8B5E3C; font-size: 15px; }
+  .nce-wrap .tip .tp { color: #999; font-size: 12px; margin-left: 6px; }
+  .nce-wrap .tip .tm { color: #555; margin-top: 4px; }
+  .nce-wrap details { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 16px; overflow: hidden; }
+  .nce-wrap summary { padding: 14px 22px; font-size: 14px; font-weight: 600; color: #6b5c4d; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px; transition: background 0.2s; list-style: none; }
+  .nce-wrap summary::-webkit-details-marker { display: none; }
+  .nce-wrap summary:hover { background: #faf5ef; }
+  .nce-wrap summary::before { content: "▶"; font-size: 10px; transition: transform 0.25s ease; display: inline-block; color: #b8a48e; }
+  .nce-wrap details[open] > summary::before { transform: rotate(90deg); }
+  .nce-wrap .dc { padding: 0 22px 20px 22px; font-size: 15px; line-height: 1.9; color: #444; border-top: 1px solid #f0ebe4; }
+  .nce-wrap .dc p { margin-top: 14px; }
+  .nce-wrap .qa { margin-top: 16px; }
+  .nce-wrap .qa .q { font-weight: 600; color: #5a4a3a; margin-bottom: 4px; }
+  .nce-wrap .qa .a { color: #555; padding-left: 14px; border-left: 3px solid #e8ddd0; }
+  .nce-wrap .hint { font-size: 12px; color: #b8a48e; margin-bottom: 16px; text-align: right; }
+</style>
+
+<div class="nce-wrap" id="nceRoot">
+  <h1>Lesson 1 — A Private Conversation</h1>
+  <p class="sub">新概念英语 第二册</p>
+
+  <p class="stitle">课文原文</p>
+  <p class="hint">点击任意单词查看释义</p>
+  <div class="passage" id="passage"></div>
+
+  <details>
+    <summary>简单句口语复述</summary>
+    <div class="dc">
+      <p>Last week I went to the theatre. I had a good seat. The play was interesting, but I didn't enjoy it. A young man and a young woman were sitting behind me, talking loudly. I couldn't hear the actors. I got angry and turned round. I told them to be quiet. But the young man said rudely, "This is a private conversation!"</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>扩展口语问答参考</summary>
+    <div class="dc">
+      <div class="qa">
+        <p class="q">Q1: Have you ever been disturbed while watching a movie or a play?</p>
+        <p class="a">Yes, once. I was watching a movie in the cinema and a group of people behind me kept talking and laughing. I felt really annoyed because I couldn't follow the story. In the end, I asked the staff to help.</p>
+      </div>
+      <div class="qa">
+        <p class="q">Q2: What do you usually do when someone disturbs you in public?</p>
+        <p class="a">It depends. If it's not too bad, I just ignore it. But if it really bothers me, I'll turn around and politely ask them to keep quiet. I don't want to start an argument, but I also want to enjoy myself.</p>
+      </div>
+      <div class="qa">
+        <p class="q">Q3: Do you prefer watching a play at the theatre or watching a movie at the cinema? Why?</p>
+        <p class="a">I prefer the cinema because it's more relaxing. The theatre is nice, but you have to dress up and sit quietly for a long time. At the cinema, I can just grab some popcorn and enjoy the show. Besides, the tickets are usually cheaper.</p>
+      </div>
+    </div>
+  </details>
+
+  <div class="tip" id="tooltip"></div>
+</div>
+
+<script>
+const dict = {
+  "last": { pos: "adj.", meaning: "最后的；上一个" },
+  "week": { pos: "n.", meaning: "周，星期" },
+  "went": { pos: "v.", meaning: "去（go 的过去式）" },
+  "theatre": { pos: "n.", meaning: "剧院" },
+  "had": { pos: "v.", meaning: "有（have 的过去式）" },
+  "very": { pos: "adv.", meaning: "非常" },
+  "good": { pos: "adj.", meaning: "好的" },
+  "seat": { pos: "n.", meaning: "座位" },
+  "play": { pos: "n.", meaning: "戏剧" },
+  "interesting": { pos: "adj.", meaning: "有趣的" },
+  "did": { pos: "aux.", meaning: "做（do 的过去式）" },
+  "not": { pos: "adv.", meaning: "不" },
+  "enjoy": { pos: "v.", meaning: "享受，喜爱" },
+  "young": { pos: "adj.", meaning: "年轻的" },
+  "man": { pos: "n.", meaning: "男人" },
+  "woman": { pos: "n.", meaning: "女人" },
+  "were": { pos: "v.", meaning: "是（be 的过去式）" },
+  "sitting": { pos: "v.", meaning: "坐着（sit 的现在分词）" },
+  "behind": { pos: "prep.", meaning: "在…后面" },
+  "me": { pos: "pron.", meaning: "我（宾格）" },
+  "they": { pos: "pron.", meaning: "他们" },
+  "talking": { pos: "v.", meaning: "谈话（talk 的现在分词）" },
+  "loudly": { pos: "adv.", meaning: "大声地" },
+  "could": { pos: "aux.", meaning: "能够（can 的过去式）" },
+  "hear": { pos: "v.", meaning: "听见" },
+  "word": { pos: "n.", meaning: "词，单词" },
+  "got": { pos: "v.", meaning: "变得（get 的过去式）" },
+  "angry": { pos: "adj.", meaning: "生气的" },
+  "actors": { pos: "n.", meaning: "演员（复数）" },
+  "turned": { pos: "v.", meaning: "转动（turn 的过去式）" },
+  "round": { pos: "adv.", meaning: "围绕；转圈" },
+  "looked": { pos: "v.", meaning: "看（look 的过去式）" },
+  "angrily": { pos: "adv.", meaning: "生气地" },
+  "pay": { pos: "v.", meaning: "支付；给予" },
+  "any": { pos: "det.", meaning: "任何" },
+  "attention": { pos: "n.", meaning: "注意" },
+  "at": { pos: "prep.", meaning: "在" },
+  "said": { pos: "v.", meaning: "说（say 的过去式）" },
+  "can't": { pos: "aux.", meaning: "不能" },
+  "disturbing": { pos: "v.", meaning: "打扰，妨碍" },
+  "rudely": { pos: "adv.", meaning: "粗鲁地" },
+  "private": { pos: "adj.", meaning: "私人的" },
+  "conversation": { pos: "n.", meaning: "谈话，对话" },
+  "this": { pos: "pron.", meaning: "这" },
+  "is": { pos: "v.", meaning: "是" },
+  "a": { pos: "art.", meaning: "一个" },
+  "i": { pos: "pron.", meaning: "我" },
+  "to": { pos: "prep.", meaning: "到，向" },
+  "the": { pos: "art.", meaning: "这，那" },
+  "it": { pos: "pron.", meaning: "它" },
+  "and": { pos: "conj.", meaning: "和" },
+  "but": { pos: "conj.", meaning: "但是" },
+  "in": { pos: "prep.", meaning: "在…里" },
+  "of": { pos: "prep.", meaning: "…的" },
+  "with": { pos: "prep.", meaning: "和…一起" },
+  "on": { pos: "prep.", meaning: "在…上" },
+  "for": { pos: "prep.", meaning: "为了" },
+  "from": { pos: "prep.", meaning: "从" },
+  "by": { pos: "prep.", meaning: "被，通过" },
+  "about": { pos: "prep.", meaning: "关于" },
+  "into": { pos: "prep.", meaning: "进入" },
+  "after": { pos: "prep.", meaning: "在…之后" },
+  "before": { pos: "prep.", meaning: "在…之前" },
+  "between": { pos: "prep.", meaning: "在…之间" },
+  "under": { pos: "prep.", meaning: "在…下面" },
+  "over": { pos: "prep.", meaning: "在…上方" }
+};
+
+const passageText = `Last week I went to the theatre. I had a very good seat. The play was very interesting. I did not enjoy it. A young man and a young woman were sitting behind me. They were talking very loudly. I could not hear a word. I got very angry. I could not hear the actors. I turned round. I looked at the man and the woman angrily. They did not pay any attention. At last, I said, "I can't hear a word! You are disturbing me!" The young man said rudely, "This is a private conversation!"`;
+
+const hlWords = new Set(["theatre", "seat", "interesting", "sitting", "loudly", "turned round", "angrily", "pay any attention", "disturbing", "conversation"]);
+
+const passage = document.getElementById("passage");
+const tooltip = document.getElementById("tooltip");
+const nceRoot = document.getElementById("nceRoot");
+
+// Tokenize and wrap words
+const tokens = passageText.match(/[\w']+|[^\w']+/g) || [];
+let html = "";
+for (const tok of tokens) {
+  if (/^[\w']+$/.test(tok)) {
+    const lower = tok.toLowerCase();
+    const isHl = hlWords.has(lower);
+    html += `<span class="w${isHl ? ' hl' : ''}" data-word="${lower}">${tok}</span>`;
+  } else {
+    html += tok;
+  }
+}
+passage.innerHTML = html;
+
+let activeWord = null;
+
+passage.addEventListener("click", (e) => {
+  const el = e.target.closest(".w");
+  if (!el) {
+    tooltip.classList.remove("show");
+    activeWord = null;
+    return;
+  }
+
+  const word = el.dataset.word;
+  const info = dict[word];
+
+  if (activeWord === el) {
+    tooltip.classList.remove("show");
+    activeWord = null;
+    return;
+  }
+
+  activeWord = el;
+
+  if (info) {
+    tooltip.innerHTML = `<span class="tw">${word}</span><span class="tp">${info.pos}</span><div class="tm">${info.meaning}</div>`;
+  } else {
+    tooltip.innerHTML = `<span class="tw">${word}</span><div class="tm" style="color:#999">暂无释义</div>`;
+  }
+
+  const rect = el.getBoundingClientRect();
+  const rootRect = nceRoot.getBoundingClientRect();
+  let left = rect.left - rootRect.left + rect.width / 2;
+  let top = rect.bottom - rootRect.top + 6;
+
+  tooltip.style.left = left + "px";
+  tooltip.style.top = top + "px";
+  tooltip.style.transform = "translateX(-50%)";
+  tooltip.classList.add("show");
+
+  // Adjust if off-screen
+  requestAnimationFrame(() => {
+    const tipRect = tooltip.getBoundingClientRect();
+    if (tipRect.left < 8) {
+      tooltip.style.left = (left + (8 - tipRect.left)) + "px";
+    } else if (tipRect.right > window.innerWidth - 8) {
+      tooltip.style.left = (left - (tipRect.right - window.innerWidth + 8)) + "px";
+    }
+  });
+});
+
+document.addEventListener("click", (e) => {
+  if (!nceRoot.contains(e.target)) {
+    tooltip.classList.remove("show");
+    activeWord = null;
+  }
+});
+</script>
