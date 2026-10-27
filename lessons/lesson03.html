@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 3 — Please Send Me A Card</title>
+</head>
+<body>
+<style>
+  .nce-wrap { font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif; background: #faf8f5; color: #333; line-height: 1.8; padding: 32px 16px; max-width: 720px; margin: 0 auto; position: relative; }
+  .nce-wrap h1 { font-size: 22px; font-weight: 700; color: #2c2c2c; margin-bottom: 4px; }
+  .nce-wrap .sub { font-size: 13px; color: #999; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid #e8e2da; }
+  .nce-wrap .stitle { font-size: 15px; font-weight: 600; color: #6b5c4d; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .nce-wrap .passage, .nce-wrap .dc { background: #fff; border-radius: 10px; padding: 22px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 24px; font-size: 17px; line-height: 2.1; }
+  .nce-wrap .w { cursor: pointer; border-radius: 3px; padding: 1px 2px; transition: background 0.15s, color 0.15s; position: relative; }
+  .nce-wrap .w:hover { background: #f0e8dc; }
+  .nce-wrap .w.hl { color: #8B5E3C; font-weight: 700; }
+  .nce-wrap .w.hl:hover { background: #f0e4d4; }
+  .nce-wrap .w.speaking { background: #e8dfd2; }
+  .nce-wrap .tip { position: fixed; background: #fff; border: 1px solid #e0d6c8; border-radius: 8px; padding: 12px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; font-size: 14px; line-height: 1.6; pointer-events: none; opacity: 0; transition: opacity 0.2s; max-width: 300px; }
+  .nce-wrap .tip.show { opacity: 1; pointer-events: auto; }
+  .nce-wrap .tip .tw { font-weight: 700; color: #8B5E3C; font-size: 15px; }
+  .nce-wrap .tip .tp { color: #999; font-size: 12px; margin-left: 6px; }
+  .nce-wrap .tip .tm { color: #555; margin-top: 4px; }
+  .nce-wrap .tip .tg { color: #6b5c4d; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e0d6c8; font-size: 13px; line-height: 1.5; }
+  .nce-wrap .tip .spk-row { margin-top: 8px; display: flex; gap: 8px; }
+  .nce-wrap .tip .tph { color: #8b7a68; font-size: 12.5px; margin-left: 6px; }
+  .nce-wrap .tip .spk-row { flex-wrap: wrap; }
+  .nce-wrap .tip .spk { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; color: #b8a48e; font-size: 12px; pointer-events: auto; padding: 4px 10px; border-radius: 12px; border: 1px solid #e0d6c8; transition: all 0.15s; background: #faf8f5; }
+  .nce-wrap .tip .spk:hover { color: #8B5E3C; border-color: #8B5E3C; background: #fff; }
+  .nce-wrap .tip .spk.playing { color: #8B5E3C; border-color: #8B5E3C; background: #f5ede2; }
+  .nce-wrap details { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 16px; overflow: hidden; }
+  .nce-wrap summary { padding: 14px 22px; font-size: 14px; font-weight: 600; color: #6b5c4d; cursor: pointer; user-select: none; display: flex; align-items: center; gap: 8px; transition: background 0.2s; list-style: none; }
+  .nce-wrap summary::-webkit-details-marker { display: none; }
+  .nce-wrap summary:hover { background: #faf5ef; }
+  .nce-wrap summary::before { content: "▶"; font-size: 10px; transition: transform 0.25s ease; display: inline-block; color: #b8a48e; }
+  .nce-wrap details[open] > summary::before { transform: rotate(90deg); }
+  .nce-wrap .dc { padding: 16px 22px 20px 22px; font-size: 15px; line-height: 1.9; color: #444; border-top: 1px solid #f0ebe4; margin-bottom: 0; }
+  .nce-wrap .dc p { margin-top: 14px; }
+  .nce-wrap .qa { margin-top: 16px; }
+  .nce-wrap .qa .q { font-weight: 600; color: #5a4a3a; margin-bottom: 4px; }
+  .nce-wrap .qa .a { color: #555; padding-left: 14px; border-left: 3px solid #e8ddd0; }
+  .nce-wrap .hint { font-size: 12px; color: #b8a48e; margin-bottom: 16px; text-align: right; }
+  .nce-wrap .voice-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 10px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nce-wrap .voice-bar label { font-size: 13px; color: #6b5c4d; font-weight: 600; }
+  .nce-wrap .voice-bar select { flex: 1; padding: 6px 10px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 13px; color: #555; background: #faf8f5; cursor: pointer; outline: none; }
+  .nce-wrap .voice-bar select:focus { border-color: #8B5E3C; }
+  .nce-wrap .voice-bar .test-btn { padding: 6px 12px; border: 1px solid #e0d6c8; border-radius: 6px; font-size: 12px; color: #6b5c4d; background: #faf8f5; cursor: pointer; transition: all 0.15s; }
+  .nce-wrap .voice-bar .test-btn:hover { border-color: #8B5E3C; color: #8B5E3C; }
+  .nav-bar { display: grid; grid-template-columns: 1fr auto 1fr auto; align-items: center; gap: 8px; margin-bottom: 20px; padding: 12px 16px; background: #fff; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nav-bar a { color: #8B5E3C; text-decoration: none; font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  .nav-bar a:hover { background: #f0e8dc; }
+</style>
+
+<div class="nce-wrap" id="nceRoot">
+  <div class="nav-bar">
+    <a href="lesson02.html">← 上一课</a>
+    <span style="color:#999;font-size:13px">Lesson 3</span>
+    <a href="lesson04.html">下一课 →</a>
+    <a href="../index.html">返回目录</a>
+  </div>
+
+  <h1>Lesson 3 — Please Send Me A Card</h1>
+  <p class="sub">新概念英语 第二册</p>
+
+  <div class="voice-bar">
+    <label>发音：</label>
+    <select id="voiceSelect"></select>
+    <button class="test-btn" id="testVoice">试听</button>
+  </div>
+
+  <p class="stitle">课文原文</p>
+  <p class="hint">点击任意单词查看释义、语法和发音</p>
+  <div class="passage" data-sentences="Postcards always spoil my holidays.|Last summer, I went to Italy.|I visited museums and sat in public gardens.|A friendly waiter taught me a few words of Italian.|Then he lent me a book.|I read a few lines, but I did not understand a word.|Every day I thought about postcards.|My holidays passed quickly, but I did not send cards to my friends.|On the last day I made a big decision.|I got up early and bought thirty-seven cards.|I spent the whole day in my room, but I did not write a single card!"></div>
+
+  <details open>
+    <summary>简单句口语复述</summary>
+    <div class="dc" data-sentences="The writer's holidays are always spoiled by postcards.|Last summer he visited Italy and tried to learn some Italian, but understood nothing.|He kept thinking about postcards yet sent none to his friends.|On the last day he bought thirty-seven cards, but after a whole day in his room he did not write even one!"></div>
+  </details>
+
+  <details open>
+    <summary>扩展口语问答参考</summary>
+    <div class="dc">
+      <div class="qa">
+        <p class="q" data-sentences="Do you like sending postcards when you travel?"></p>
+        <p class="a" data-sentences="Yes, I like sending postcards.|It's a nice way to share my experience with friends.|People enjoy receiving something personal.|It's more meaningful than just sending a text."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="Have you ever been to Italy?"></p>
+        <p class="a" data-sentences="No, I haven't been to Italy yet.|But I'd love to visit someday.|I've heard the food is amazing.|The historical sites look beautiful in photos."></p>
+      </div>
+      <div class="qa">
+        <p class="q" data-sentences="Why do you think the writer didn't write any cards?"></p>
+        <p class="a" data-sentences="Maybe he was too busy enjoying his holiday.|He might have been lazy or procrastinated.|Perhaps he couldn't decide what to write.|Or he simply ran out of time."></p>
+      </div>
+    </div>
+  </details>
+
+  <div class="tip" id="tooltip"></div>
+</div>
+
+<script>
+const dict = {
+  "a": {"pos":"art.","meaning":"一个","grammar":"不定冠词","us":"ə"},
+  "about": {"pos":"prep.","meaning":"关于","grammar":"介词","us":"əˈbaʊt"},
+  "always": {"pos":"adv.","meaning":"总是","grammar":"频率副词","us":"ˈɔːlˌweɪz"},
+  "amazing": {"pos":"adj.","meaning":"令人惊奇的，了不起的","grammar":"形容词，修饰名词或作表语。","us":"əˈmeɪzɪŋ"},
+  "and": {"pos":"conj.","meaning":"和","grammar":"并列连词","us":"ənd"},
+  "any": {"pos":"adj.","meaning":"任何","grammar":"形容词","us":"ˈɛni"},
+  "beautiful": {"pos":"adj.","meaning":"美丽的","grammar":"形容词","us":"ˈbjuːtəfəl"},
+  "been": {"pos":"v.","meaning":"去过/been","grammar":"be的过去分词","us":"bɪn"},
+  "big": {"pos":"adj.","meaning":"大的","grammar":"形容词","us":"bɪɡ"},
+  "book": {"pos":"n.","meaning":"书","grammar":"名词","us":"bʊk"},
+  "bought": {"pos":"v.","meaning":"买了","grammar":"buy的过去式","us":"bɑːt","uk":"bɒt"},
+  "busy": {"pos": "adj.", "meaning": "忙碌的", "grammar": "形容词，修饰名词或作表语。","us":"ˈbɪzi"},
+  "but": {"pos":"conj.","meaning":"但是","grammar":"转折连词","us":"bʌt"},
+  "card": {"pos": "n.", "meaning": "卡片", "grammar": "名词，可在句中作主语或宾语。","us":"kɑːrd","uk":"kɑːd"},
+  "cards": {"pos":"n.","meaning":"卡片","grammar":"名词复数","us":"kɑːrdz","uk":"kɑːdz"},
+  "couldn't": {"pos":"aux.","meaning":"不能","grammar":"could not缩写","us":"ˈkʊdənt"},
+  "day": {"pos":"n.","meaning":"天","grammar":"名词","us":"deɪ"},
+  "decide": {"pos":"v.","meaning":"决定","grammar":"动词原形","us":"ˌdɪˈsaɪd"},
+  "decision": {"pos":"n.","meaning":"决定","grammar":"名词","us":"dɪˈsɪʒən"},
+  "did": {"pos":"aux.","meaning":"做（过去式）","grammar":"助动词过去式，构成否定/疑问","us":"dɪd"},
+  "didn't": {"pos":"aux.","meaning":"没有","grammar":"did not缩写","us":"ˈdɪdənt"},
+  "do": {"pos":"v.","meaning":"做","grammar":"助动词/实义动词","us":"duː"},
+  "early": {"pos":"adj.","meaning":"早的","grammar":"形容词","us":"ˈɜːrli","uk":"ˈɜːli"},
+  "enjoy": {"pos":"v.","meaning":"享受","grammar":"动词原形","us":"ˌɛnˈdʒɔɪ"},
+  "enjoying": {"pos": "v.", "meaning": "享受", "grammar": "enjoy的现在分词","us":"ˌɛnˈdʒɔɪɪŋ"},
+  "ever": {"pos": "adv.", "meaning": "曾经", "grammar": "时间副词","us":"ˈɛvɚ","uk":"ˈɛvə"},
+  "every": {"pos":"adj.","meaning":"每个","grammar":"形容词","us":"ˈɛvɚi","uk":"ˈɛvəi"},
+  "experience": {"pos":"n.","meaning":"经历","grammar":"名词","us":"ɪkˈspɪriəns"},
+  "few": {"pos":"adj.","meaning":"几个","grammar":"形容词","us":"fjuː"},
+  "food": {"pos":"n.","meaning":"食物","grammar":"名词","us":"fuːd"},
+  "friendly": {"pos":"adj.","meaning":"友好的","grammar":"形容词","us":"ˈfrɛndli"},
+  "friends": {"pos":"n.","meaning":"朋友","grammar":"名词复数","us":"frɛndz"},
+  "gardens": {"pos":"n.","meaning":"花园","grammar":"名词复数","us":"ˈɡɑːrdənz","uk":"ˈɡɑːdənz"},
+  "got": {"pos":"v.","meaning":"得到了","grammar":"get的过去式","us":"ɡɑːt","uk":"ɡɒt"},
+  "have": {"pos":"v.","meaning":"有","grammar":"动词，have/has有","us":"hæv"},
+  "haven't": {"pos": "v.", "meaning": "没有", "grammar": "have not缩写","us":"ˈhævənt"},
+  "he": {"pos":"pron.","meaning":"他","grammar":"代词主格，作主语","us":"hiː"},
+  "heard": {"pos":"v.","meaning":"听到了","grammar":"hear的过去式","us":"hɜːrd","uk":"hɜːd"},
+  "his": {"pos":"pron.","meaning":"他的","grammar":"形容词性物主代词","us":"hɪz"},
+  "historical": {"pos":"adj.","meaning":"历史的，有关历史的","grammar":"形容词，修饰名词或作表语。","us":"hɪˈstɔːrɪkəl"},
+  "holiday": {"pos":"n.","meaning":"假期","grammar":"名词","us":"ˈhɑːləˌdeɪ","uk":"ˈhɒləˌdeɪ"},
+  "holidays": {"pos":"n.","meaning":"假期","grammar":"名词复数","us":"ˈhɑːləˌdeɪz","uk":"ˈhɒləˌdeɪz"},
+  "i": {"pos":"pron.","meaning":"我","grammar":"代词主格，作主语","us":"aɪ"},
+  "i'd": {"pos":"pron.","meaning":"我会","grammar":"I would缩写","us":"aɪd"},
+  "i've": {"pos":"pron.","meaning":"我已经","grammar":"I have缩写","us":"aɪv"},
+  "in": {"pos":"prep.","meaning":"在…里","grammar":"介词","us":"ɪn"},
+  "is": {"pos":"v.","meaning":"是","grammar":"be动词，第三人称单数","us":"ɪz"},
+  "it's": {"pos":"v.","meaning":"它是","grammar":" ","us":"ɪts"},
+  "italian": {"pos":"n.","meaning":"意大利语","grammar":"名词","us":"ˌɪˈtæljən"},
+  "italy": {"pos":"n.","meaning":"意大利","grammar":"专有名词","us":"ˈɪtəli"},
+  "just": {"pos":"adv.","meaning":"刚刚/只是","grammar":"时间副词","us":"dʒʌst"},
+  "last": {"pos":"adj.","meaning":"最后的","grammar":"形容词","us":"læst","uk":"lɑːst"},
+  "lazy": {"pos": "adj.", "meaning": "懒惰的", "grammar": "形容词，修饰名词或作表语。","us":"ˈleɪzi"},
+  "lent": {"pos":"v.","meaning":"借出了","grammar":"lend的过去式","us":"lɛnt"},
+  "like": {"pos":"prep.","meaning":"像","grammar":"介词","us":"laɪk"},
+  "lines": {"pos":"n.","meaning":"行","grammar":"名词复数","us":"laɪnz"},
+  "look": {"pos":"v.","meaning":"看","grammar":"动词原形","us":"lʊk"},
+  "love": {"pos":"v.","meaning":"爱","grammar":"动词原形","us":"lʌv"},
+  "made": {"pos":"v.","meaning":"做了","grammar":"make的过去式","us":"meɪd"},
+  "maybe": {"pos": "adv.", "meaning": "也许", "grammar": "副词","us":"ˈmeɪbi"},
+  "me": {"pos":"pron.","meaning":"我","grammar":"代词宾格","us":"miː"},
+  "meaningful": {"pos":"adj.","meaning":"有意义的，意味深长的","grammar":"形容词，修饰名词或作表语。","us":"ˈmiːnɪŋfəl"},
+  "might": {"pos":"aux.","meaning":"可能","grammar":"may的过去式/虚拟","us":"maɪt"},
+  "more": {"pos": "adj.", "meaning": "许多", "grammar": "比较级形式。 形容词，修饰不可数名词","us":"mɔːr","uk":"mɔː"},
+  "museums": {"pos":"n.","meaning":"博物馆","grammar":"名词复数","us":"mjuˈziːəmz"},
+  "my": {"pos":"pron.","meaning":"我的","grammar":"形容词性物主代词","us":"maɪ"},
+  "nice": {"pos": "adj.", "meaning": "好的", "grammar": "形容词，修饰名词或作表语。","us":"naɪs"},
+  "no": {"pos":"adv.","meaning":"不","grammar":"否定回答","us":"noʊ","uk":"nəʊ"},
+  "not": {"pos":"adv.","meaning":"不","grammar":"否定副词","us":"nɑːt","uk":"nɒt"},
+  "of": {"pos":"prep.","meaning":"…的","grammar":"介词","us":"ʌv"},
+  "on": {"pos":"prep.","meaning":"在…上","grammar":"介词","us":"ɑːn","uk":"ɒn"},
+  "or": {"pos":"conj.","meaning":"或者","grammar":"选择连词","us":"ɔːr","uk":"ɔː"},
+  "out": {"pos":"adv.","meaning":"出去","grammar":"副词","us":"aʊt"},
+  "passed": {"pos":"v.","meaning":"经过了","grammar":"pass的过去式","us":"pæst","uk":"pɑːst"},
+  "people": {"pos":"n.","meaning":"人们","grammar":"名词","us":"ˈpiːpəl"},
+  "perhaps": {"pos": "adv.", "meaning": "也许", "grammar": "副词","us":"pɚˈhæps","uk":"pəˈhɑːps"},
+  "personal": {"pos":"adj.","meaning":"个人的，私人的","grammar":"形容词，修饰名词或作表语。","us":"ˈpɜːrsɪnəl","uk":"ˈpɜːsɪnəl"},
+  "photos": {"pos": "n.", "meaning": "photo（复数）", "grammar": "名词复数","us":"ˈfoʊˌtoʊz","uk":"ˈfəʊˌtəʊz"},
+  "postcards": {"pos":"n.","meaning":"明信片（复数）","grammar":"名词复数","us":"ˈpoʊstˌkɑːrdz","uk":"ˈpəʊstˌkɑːdz"},
+  "procrastinated": {"pos":"v.","meaning":"拖延（procrastinate 的过去式）","grammar":"动词，作谓语。","us":"prəˈkræstəˌneɪtɪd"},
+  "public": {"pos":"adj.","meaning":"公共的","grammar":"形容词","us":"ˈpʌblɪk"},
+  "quickly": {"pos":"adv.","meaning":"快速地","grammar":"方式副词","us":"ˈkwɪkli"},
+  "ran": {"pos": "v.", "meaning": "跑了", "grammar": "run的过去式","us":"ræn"},
+  "read": {"pos":"v.","meaning":"读","grammar":"动词原形","us":"rɛd"},
+  "receiving": {"pos": "v.", "meaning": "收到", "grammar": "receive的现在分词","us":"rəˈsiːvɪŋ"},
+  "room": {"pos":"n.","meaning":"房间","grammar":"名词","us":"ruːm"},
+  "sat": {"pos":"v.","meaning":"坐了","grammar":"sit的过去式","us":"sæt"},
+  "send": {"pos":"v.","meaning":"发送","grammar":"动词原形","us":"sɛnd"},
+  "sending": {"pos": "v.", "meaning": "发送", "grammar": "send的现在分词","us":"ˈsɛndɪŋ"},
+  "seven": {"pos": "n.", "meaning": "七", "grammar": "名词，可在句中作主语或宾语。","us":"ˈsɛvən"},
+  "share": {"pos": "v.", "meaning": "分享", "grammar": "动词原形","us":"ʃɛr","uk":"ʃeə"},
+  "simply": {"pos": "adv.", "meaning": "简单地", "grammar": "方式副词","us":"ˈsɪmpli"},
+  "single": {"pos":"adj.","meaning":"单一的","grammar":"形容词","us":"ˈsɪŋɡəl"},
+  "sites": {"pos": "v.", "meaning": "坐", "grammar": "名词复数形式。 动词原形","us":"saɪts"},
+  "someday": {"pos": "adv.", "meaning": "（将来）某一天", "grammar": "副词，修饰动词或整个句子。","us":"ˈsʌmˌdeɪ"},
+  "something": {"pos":"pron.","meaning":"某事","grammar":"不定代词","us":"ˈsʌmθɪŋ"},
+  "spent": {"pos":"v.","meaning":"花了","grammar":"spend的过去式","us":"spɛnt"},
+  "spoil": {"pos":"v.","meaning":"破坏","grammar":"动词原形","us":"spɔɪl"},
+  "summer": {"pos":"n.","meaning":"夏天","grammar":"名词","us":"ˈsʌmɚ","uk":"ˈsʌmə"},
+  "taught": {"pos":"v.","meaning":"教了","grammar":"teach的过去式","us":"tɔːt"},
+  "text": {"pos": "n.", "meaning": "文本", "grammar": "名词，可在句中作主语或宾语。","us":"tɛkst"},
+  "than": {"pos": "n.", "meaning": "比", "grammar": "名词，可在句中作主语或宾语。","us":"ðæn"},
+  "the": {"pos":"art.","meaning":"这，那","grammar":"定冠词，特指","us":"ðə"},
+  "then": {"pos":"adv.","meaning":"然后/那时","grammar":"时间副词","us":"ðɛn"},
+  "think": {"pos":"v.","meaning":"想","grammar":"动词原形","us":"θɪŋk"},
+  "thirty": {"pos": "n.", "meaning": "三十", "grammar": "名词，可在句中作主语或宾语。","us":"ˈθɜːrˌdiː","uk":"ˈθɜːˌdiː"},
+  "thought": {"pos":"v.","meaning":"想了","grammar":"think的过去式","us":"θɔːt"},
+  "time": {"pos":"n.","meaning":"时间","grammar":"名词","us":"taɪm"},
+  "to": {"pos":"prep.","meaning":"到","grammar":"介词","us":"tuː"},
+  "too": {"pos":"adv.","meaning":"太/也","grammar":"程度副词","us":"tuː"},
+  "travel": {"pos": "v.", "meaning": "旅行", "grammar": "动词原形","us":"ˈtrævəl"},
+  "understand": {"pos":"v.","meaning":"理解","grammar":"动词原形","us":"ˌʌndɚˈstænd","uk":"ˌʌndəˈstænd"},
+  "up": {"pos":"prep.","meaning":"沿着","grammar":"介词","us":"ʌp"},
+  "visit": {"pos":"v.","meaning":"参观","grammar":"动词原形","us":"ˈvɪzɪt"},
+  "visited": {"pos":"v.","meaning":"参观了","grammar":"visit的过去式","us":"ˈvɪzɪtɪd"},
+  "waiter": {"pos":"n.","meaning":"服务员","grammar":"名词","us":"ˈweɪtɚ","uk":"ˈweɪtə"},
+  "was": {"pos":"v.","meaning":"是（过去式）","grammar":"be动词过去式","us":"wɑːz","uk":"wɒz"},
+  "way": {"pos":"n.","meaning":"方式","grammar":"名词","us":"weɪ"},
+  "went": {"pos":"v.","meaning":"去（过去式）","grammar":"go的过去式","us":"wɛnt"},
+  "what": {"pos":"pron.","meaning":"什么","grammar":"疑问代词","us":"wʌt","uk":"wɒt"},
+  "when": {"pos":"conj.","meaning":"当…时","grammar":"时间连词","us":"wɛn"},
+  "whole": {"pos":"adj.","meaning":"整个的","grammar":"形容词","us":"hoʊl","uk":"həʊl"},
+  "why": {"pos":"adv.","meaning":"为什么","grammar":"疑问副词","us":"waɪ"},
+  "with": {"pos":"prep.","meaning":"和…一起","grammar":"介词","us":"wɪð"},
+  "word": {"pos":"n.","meaning":"单词","grammar":"名词","us":"wɜːrd","uk":"wɜːd"},
+  "words": {"pos":"n.","meaning":"单词","grammar":"名词复数","us":"wɜːrdz","uk":"wɜːdz"},
+  "write": {"pos":"v.","meaning":"写","grammar":"动词原形","us":"raɪt"},
+  "writer": {"pos":"n.","meaning":"作家，作者","grammar":"名词，可在句中作主语或宾语。","us":"ˈraɪtɚ","uk":"ˈraɪtə"},
+  "yes": {"pos":"int.","meaning":"是的","grammar":"肯定回答","us":"jɛs"},
+  "yet": {"pos": "adv.", "meaning": "还", "grammar": "时间副词","us":"jɛt"},
+  "you": {"pos":"pron.","meaning":"你，你们","grammar":"代词","us":"juː"},
+};
+
+const hlWords = new Set(["postcards", "spoil", "holidays", "summer", "italy", "visited", "museums", "sat", "gardens", "friendly", "waiter", "taught", "words", "italian", "lines", "understand", "passed", "quickly", "cards", "decision", "spent", "write", "single", "card"]);
+
+const tooltip = document.getElementById("tooltip");
+const nceRoot = document.getElementById("nceRoot");
+const voiceSelect = document.getElementById("voiceSelect");
+const testBtn = document.getElementById("testVoice");
+
+let voices = [];
+let selectedVoice = null;
+
+function loadVoices() {
+  voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) return;
+  const enVoices = voices.filter(v => v.lang.startsWith('en'));
+  voiceSelect.innerHTML = '';
+  const groups = { 'US': [], 'UK': [], 'Other': [] };
+  enVoices.forEach(v => {
+    const name = v.name.toLowerCase();
+    if (name.includes('us') || name.includes('american') || v.lang === 'en-US') groups['US'].push(v);
+    else if (name.includes('uk') || name.includes('british') || v.lang === 'en-GB') groups['UK'].push(v);
+    else groups['Other'].push(v);
+  });
+  const preferUS = ['Samantha', 'Alex', 'Tom'];
+  const preferUK = ['Daniel', 'Kate', 'Serena'];
+  function sortVoices(list, pref) {
+    return list.sort((a, b) => {
+      const ai = pref.findIndex(p => a.name.includes(p));
+      const bi = pref.findIndex(p => b.name.includes(p));
+      if (ai !== -1 && bi === -1) return -1;
+      if (ai === -1 && bi !== -1) return 1;
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      return a.name.localeCompare(b.name);
+    });
+  }
+  groups['US'] = sortVoices(groups['US'], preferUS);
+  groups['UK'] = sortVoices(groups['UK'], preferUK);
+  if (groups['US'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇺🇸 美式发音';
+    groups['US'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      if (i === 0 && !selectedVoice) { selectedVoice = v; opt.selected = true; }
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['UK'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '🇬🇧 英式发音';
+    groups['UK'].forEach((v, i) => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+  if (groups['Other'].length > 0) {
+    const og = document.createElement('optgroup');
+    og.label = '其他';
+    groups['Other'].forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = voices.indexOf(v);
+      opt.textContent = v.name;
+      og.appendChild(opt);
+    });
+    voiceSelect.appendChild(og);
+  }
+}
+
+loadVoices();
+if (typeof speechSynthesis !== 'undefined') speechSynthesis.onvoiceschanged = loadVoices;
+
+voiceSelect.addEventListener('change', () => { selectedVoice = voices[parseInt(voiceSelect.value)]; });
+testBtn.addEventListener('click', () => {
+  if (!selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance('Hello, this is a test.');
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  window.speechSynthesis.speak(u);
+});
+
+function wrapSentences(el) {
+  const data = el.getAttribute("data-sentences");
+  if (!data) return;
+  const sentences = data.split("|");
+  let html = "";
+  sentences.forEach((s, si) => {
+    const tokens = s.match(/[\w']+|[^\w']+/g) || [];
+    for (const tok of tokens) {
+      if (/^[\w']+$/.test(tok)) {
+        const lower = tok.toLowerCase();
+        const isHl = hlWords.has(lower);
+        html += `<span class="w${isHl ? ' hl' : ''}" data-word="${lower}" data-sentence="${encodeURIComponent(s)}">${tok}</span>`;
+      } else html += tok;
+    }
+    if (si < sentences.length - 1) html += " ";
+  });
+  el.innerHTML = html;
+}
+
+document.querySelectorAll("[data-sentences]").forEach(wrapSentences);
+
+function speak(word, el) {
+  if (!('speechSynthesis' in window) || !selectedVoice) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(word);
+  u.voice = selectedVoice; u.lang = selectedVoice.lang;
+  u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+  el.classList.add("speaking");
+  u.onend = () => el.classList.remove("speaking");
+  u.onerror = () => el.classList.remove("speaking");
+  window.speechSynthesis.speak(u);
+}
+
+function showTip(el, word) {
+  const info = dict[word];
+  const rect = el.getBoundingClientRect();
+  let grammarText = info && info.grammar ? info.grammar : "暂无语法解释";
+  if (info) {
+    tooltip.innerHTML = `<span class="tw">${word}</span><span class="tp">${info.pos}</span>${(info.us || info.uk) ? `<span class="tph">/${info.us || info.uk}/</span>` : ""}<div class="tm">${info.meaning}</div><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美${info.us ? " " + info.us : ""}</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英${(info.uk || info.us) ? " " + (info.uk || info.us) : ""}</span></div>`;
+  } else {
+    tooltip.innerHTML = `<span class="tw">${word}</span><div class="tg">📖 ${grammarText}</div><div class="spk-row"><span class="spk" data-word="${word}">🔊 美式</span><span class="spk" data-word="${word}" data-accent="uk">🔊 英式</span></div>`;
+  }
+  let left = rect.left + rect.width / 2;
+  let top = rect.bottom + 6;
+  tooltip.style.left = left + "px";
+  tooltip.style.top = top + "px";
+  tooltip.style.transform = "translateX(-50%)";
+  tooltip.classList.add("show");
+  requestAnimationFrame(() => {
+    const tr = tooltip.getBoundingClientRect();
+    if (tr.left < 8) tooltip.style.left = (left + (8 - tr.left)) + "px";
+    else if (tr.right > window.innerWidth - 8) tooltip.style.left = (left - (tr.right - window.innerWidth + 8)) + "px";
+    if (tr.bottom > window.innerHeight - 8) tooltip.style.top = (rect.top - tr.height - 6) + "px";
+  });
+}
+
+let activeWord = null;
+nceRoot.addEventListener("click", (e) => {
+  const spkBtn = e.target.closest(".spk");
+  if (spkBtn) {
+    e.stopPropagation();
+    const word = spkBtn.dataset.word;
+    const isUK = spkBtn.dataset.accent === "uk";
+    let voice = selectedVoice;
+    if (voices.length > 0) {
+      const targetLang = isUK ? 'en-GB' : 'en-US';
+      const found = voices.find(v => v.lang === targetLang);
+      if (found) voice = found;
+    }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(word);
+    u.voice = voice; u.lang = voice.lang;
+    u.rate = 1.0; u.pitch = 1.0; u.volume = 1.0;
+    spkBtn.classList.add("playing");
+    u.onend = () => spkBtn.classList.remove("playing");
+    u.onerror = () => spkBtn.classList.remove("playing");
+    window.speechSynthesis.speak(u);
+    return;
+  }
+  const el = e.target.closest(".w");
+  if (!el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  const word = el.dataset.word;
+  if (activeWord === el) { tooltip.classList.remove("show"); activeWord = null; return; }
+  activeWord = el;
+  showTip(el, word);
+  speak(word, el);
+});
+document.addEventListener("click", (e) => {
+  if (!nceRoot.contains(e.target)) { tooltip.classList.remove("show"); activeWord = null; }
+});
+</script>
+<style id="mobile-adapt">
+@media (max-width: 600px) {
+  html { -webkit-text-size-adjust: 100%; }
+  .nce-wrap { padding: 18px 10px calc(60px + env(safe-area-inset-bottom)); }
+  .nce-wrap h1 { font-size: 19px; }
+  .nce-wrap .sub { font-size: 12px; margin-bottom: 18px; padding-bottom: 12px; }
+  .nce-wrap .passage, .nce-wrap .dc { padding: 16px 14px; font-size: 16.5px; line-height: 2.05; }
+  .nce-wrap .dc { font-size: 15px; line-height: 1.85; }
+  .nce-wrap summary { padding: 12px 14px; font-size: 13px; }
+  .nce-wrap .voice-bar { flex-wrap: wrap; padding: 8px 12px; gap: 8px; }
+  .nce-wrap .voice-bar select { flex: 1 1 140px; min-width: 0; }
+  .nav-bar { padding: 8px 10px; gap: 4px; }
+  .nav-bar a { font-size: 13px; padding: 8px 8px; }
+  .nce-wrap .hint { font-size: 11px; }
+  .nce-wrap .tip {
+    left: 50% !important; top: auto !important;
+    bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+    transform: translateX(-50%) !important;
+    width: calc(100vw - 20px); max-width: 460px;
+    font-size: 15px; padding: 14px 16px;
+  }
+  .nce-wrap .tip .spk { padding: 9px 16px; font-size: 13px; }
+}
+</style>
+</body>
+</html>
